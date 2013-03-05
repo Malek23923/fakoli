@@ -52,9 +52,9 @@ class EmailHandler
 	var $onSendComplete; // optional user callback function after mail is sent
 
 	/**
-	 * 
+	 *
 	 * @param String $toAddr
-	 * @param String $subject 
+	 * @param String $subject
 	 * @param String $message
 	 * @param String $emailFrom - if blank, use settings email_from; if not blank and != settings, set this value into Reply To header instead
 	 * @param String $emailName - same as above
@@ -65,23 +65,23 @@ class EmailHandler
 
 		$site_email_from =  Settings::getValue('email', 'email_from');
 		$site_email_name =  Settings::getValue('email', 'email_name');
-		
+
 		$replyTo = $site_email_from;
 		$replyToName = $site_email_name;
-		
+
 		if($emailFrom)
 		{
 			$replyTo = $emailFrom;
 		}
-		
+
 		if($emailName)
 		{
 			$replyToName = $emailName;
 		}
-		
+
 		// Use the MD5 algorithm to generate a random hash
 		$random_hash = md5(date('r', time()));
-		$headers = "From: ". $site_email_from . " <" . $site_email_name . ">\r\n";
+		$headers = "From: ". $replyTo . " <" . $replyToName . ">\r\n";
 		$headers .= "Return-Path: ". $site_email_from . "\r\n";
 		$headers .= "Reply-To: ". $replyTo . " <" . $replyToName . ">\r\n";
 		$headers .= "Mime-Version: 1.0\r\n";
@@ -89,7 +89,7 @@ class EmailHandler
 		$headers .= "Content-Type: multipart/alternative; boundary=\"--PHP-alt-".$random_hash."\"\r\n";
 
 		$message = $this->getMessageScript($message, $random_hash);
-			
+
 		$this->mail = new Mail($site_email_from, $toAddr, $subject, $message, $headers);
 	}
 
@@ -100,7 +100,7 @@ class EmailHandler
 	function getMessageScript($msg, $random_hash)
 	{
 		global $config;
-		
+
 		if ($config['html_email_template'])
 		{
 			$file = $config['homedir'] . $config['html_email_template'];
@@ -112,8 +112,8 @@ class EmailHandler
 		else
 		{
 			$html = $msg;
-		}		
-		
+		}
+
 		//define the body of the message.
 		ob_start(); //Turn on output buffering
 		?>
@@ -146,14 +146,14 @@ Content-Transfer-Encoding: 8bit
 	function send()
 	{
 		$rtn = $this->mail->send();
-		
+
 		trace("EmailHandler send rtn $rtn", 3);
 		// Call the callback whether successful or not; calling script
-		// decides how to handle either way. 
+		// decides how to handle either way.
 		if ($this->onSendComplete AND is_callable($this->onSendComplete))
 		{
 			call_user_func($this->onSendComplete, $mail, $rtn);
-		}			
+		}
 		return $rtn;
 	}
 }
@@ -163,13 +163,13 @@ Content-Transfer-Encoding: 8bit
  * Takes an email template and an obj of any DataItem class
  * and sends email to a list of recipients after substituting
  * merge codes for values from the obj.
- * 
+ *
  * For example: message text "Dear [first_name]" becomes
  * Dear John Smith
- * 
+ *
  * @item: obj of DataItem class that has the field values to be used
  * in the email (e.g., user, program, order).
- * 
+ *
  * @emailTemplate: instance of DataItem EmailTemplate. This can
  * be an instance constructed on the fly rather than retrieved from
  * the db. If constructed, the following fields must be set:
@@ -177,13 +177,13 @@ Content-Transfer-Encoding: 8bit
  *   subject
  *   message
  *   class_name
- * 
+ *
  * @onSendComplete: optional callback function to record the
  * email that was sent in a log.
- * 
+ *
  * The following var are set in function mergeEmail after
  * the MergeCodeManager performs the substitutions:
- * 
+ *
  * recipients
  * subject
  * message
@@ -211,24 +211,24 @@ class EmailManager
 	}
 
 
-	/*	
+	/*
 	 * Use MergeCodeManager, which shares functionality
-	 * with TextLookup.  
+	 * with TextLookup.
 	 */
 	function mergeEmail()
 	{
 		$emailText = $this->emailTemplate->recipients . $this->emailTemplate->subject . $this->emailTemplate->message;
 		$mgr = new MergeCodeManager($this->item, $emailText, $this->emailTemplate->class_name);
-	
+
 		$fields = array("recipients", "subject", "message");
 		foreach($fields as $field)
-			$this->$field = $mgr->searchAndReplace($this->emailTemplate->$field);			
-	}	
+			$this->$field = $mgr->searchAndReplace($this->emailTemplate->$field);
+	}
 
 	function getRecipients()
 	{
 		$validRecipients = array();
-		
+
 		trace("EmailManager:getRecipients {$this->recipients}", 3);
 		if($this->recipients)
 		{
@@ -240,26 +240,26 @@ class EmailManager
 					if(preg_match('/\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}\b/i', $recipient))
 						$validRecipients[] = $recipient;
 					else
-						trace("EmailManager:getRecipients invalid recipient $recipient", 3);					
+						trace("EmailManager:getRecipients invalid recipient $recipient", 3);
 				}
 			}
 		}
 
 		return $validRecipients;
 	}
-	
+
 	/*
 	 * Call the callback whether successful or not; calling script
 	 * decides how to handle either way. Each recipient could have
 	 * different result so we don't record multiple recipients in
 	 * one record.
 	 */
-	
+
 	function sendEmail()
 	{
 		$recipients = $this->getRecipients();
 		$rtn = false;
-		
+
 		if(count($recipients) > 0)
 		{
 			foreach($recipients as $recipient)
@@ -273,23 +273,23 @@ class EmailManager
 		}
 		return $rtn;
 	}
-	
+
 	function sendOneEmail($recipient)
 	{
 		trace("EmailManager:: sending email to recipient $recipient", 3);
-				
+
 		$email = new EmailHandler($recipient, $this->subject, $this->message, $this->emailFrom, $this->emailName);
-				
+
 		$rtn = $email->send();
-			
+
 		if ($this->onSendComplete AND is_callable($this->onSendComplete))
 		{
 			call_user_func($this->onSendComplete, $this, $recipient, $rtn);
-		}			
-		
+		}
+
 		return $rtn;
 	}
-	
+
 	static function send($sendingItem, $name, $onSendComplete = "")
 	{
 		$emailTemplate = EmailTemplate::getEmailTemplate($name);
@@ -307,35 +307,35 @@ class EmailManager
 			trace("EmailManager::no template found", 3);
 		}
 		return $rtn;
-	}	
-	
+	}
+
 	static function setDefaults()
 	{
 		trace("EmailManager::setDefaults", 3);
-		
+
 		global $config;
-		
+
 		Settings::setDefaultValue("email", "use_debugging_mode", false, "Boolean");
-		
+
 		$defaultPath = $config['uploadbase'] . DIRECTORY_SEPARATOR . "email_debug_logs";
-		
+
 		if (!file_exists($defaultPath)) mkdir($defaultPath);
-		
+
 		Settings::setDefaultValue("email", "debugging_mode_output_path", $defaultPath, "String");
 		Settings::setDefaultValue("email", "email_from", "andy@sonjara.com", "String", "From address for generated emails");
 		Settings::setDefaultValue("email", "email_contact", "andy@sonjara.com", "String", "To address for generated emails");
 		Settings::setDefaultValue("email", "email_name", "Andy Green", "String", "Name of email contact");
 		Settings::setDefaultValue("email", "mail_server", "timpani.sonjara.com", "String");
 		Settings::setDefaultValue("email", "alt_text_email", false, "Boolean", "Whether the mail server can send html-formatted email messages");
-		
-	}	
-	
+
+	}
+
 	static function upgradeComponent($version)
 	{
 		$mgr = new EmailUpgradeManager();
 		$mgr->upgrade($version);
-	}	
-	
+	}
+
 	/*
 	 * Scan the email debug log path to retrieve
 	 * all the log files.
@@ -343,16 +343,16 @@ class EmailManager
 	static function scanDebugLogs()
 	{
 		$path = Settings::getValue("email", "debugging_mode_output_path");
-	
+
 		$logs = array();
-		
+
 		trace("EmailManager::Scanning $path", 3);
 
 		$handle = opendir($path);
-		
+
 		if(!$handle)
 			return;
-			
+
 		$idx = 0;
 		while(false !== ($file = readdir($handle)))
 		{
@@ -367,17 +367,17 @@ class EmailManager
 			 	$idx++;
 			}
 		}
-		    
+
 	    closedir($handle);
-		
+
 	    return $logs;
 	}
-	
+
 	static function registerSerializationHandler()
 	{
 		SerializationManager::registerHandler("email_templates", "Email Templates", new SimpleSerializationHandler(EmailTemplate));
 		SerializationManager::registerHandler("merge_codes", "Merge Codes", new SimpleSerializationHandler(MergeCode));
-		return true;		
+		return true;
 	}
 }
 
@@ -385,9 +385,9 @@ class EmailManager
 /*
  * $sendindItem - object of a DataModel class. The templates class_name
  * must be the same class as the object
- * 
+ *
  * $name - name of the email template to be sent
- * 
+ *
  * $onSendComplete - optional user callback function, e.g., record
  * email to log file
  */
@@ -402,7 +402,7 @@ function sendEmailUsingEmailManager($sendingItem, $name, $onSendComplete = "")
 		$rtn = $emailManager->sendEmail();
 		trace("EmailManager:: rtn code $rtn", 3);
 	}
-	
+
 	return $rtn;
 }
 
