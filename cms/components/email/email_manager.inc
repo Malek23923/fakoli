@@ -70,14 +70,10 @@ class EmailHandler
 		$replyToName = $site_email_name;
 
 		if($emailFrom)
-		{
 			$replyTo = $emailFrom;
-		}
 
 		if($emailName)
-		{
 			$replyToName = $emailName;
-		}
 
 		// Use the MD5 algorithm to generate a random hash
 		$random_hash = md5(date('r', time()));
@@ -90,7 +86,7 @@ class EmailHandler
 
 		$message = $this->getMessageScript($message, $random_hash);
 
-		$this->mail = new Mail($site_email_from, $toAddr, $subject, $message, $headers);
+		$this->mail = new Mail($replyTo, $toAddr, $subject, $message, $headers);
 	}
 
 	/*
