@@ -15,9 +15,9 @@
  The above copyright notice and this permission notice shall be
  included in all copies or substantial portions of the Software.
 
- Except as contained in this notice, the name(s) of the above 
- copyright holders shall not be used in advertising or otherwise 
- to promote the sale, use or other dealings in this Software 
+ Except as contained in this notice, the name(s) of the above
+ copyright holders shall not be used in advertising or otherwise
+ to promote the sale, use or other dealings in this Software
  without prior written authorization.
 
  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
@@ -77,7 +77,7 @@ class AutoForm
 
 	var $passwordEnterLabel = "Enter";		///< Text for Password Enter label
 	var $passwordConfirmLabel = "Confirm";	///< Text for Password Confirm label
-	
+
 	var $onSaveComplete = null;	///< Callback event handler that is fired after the AutoForm has finished saving data to the database.
 
 	var $onDelete = "";					///< delete method name
@@ -95,13 +95,13 @@ class AutoForm
 
     var $groups = array(); ///< List of field groups
     var $collapsibleGroups = array(); //< List of collapsible groups and their default states
-    
+
     var $readOnlyForm;  ///< Specifies whether the entire form is read-only
     var $subordinate;	///< Specifies whether this form is a subordinate member of a composite form
-    
+
     var $layout; ///< Layout handler object
     var $default_layout = "table";
-    
+
     // When adding new renderers, must also update
     // DataItem $dataTypeRendererMap
     static $fieldRendererMap = array (
@@ -134,7 +134,7 @@ class AutoForm
 		global $auto_form_defaults;
 
 		$this->subordinate = false;
-		
+
 		$this->validator = new ValidationEngine();
 
 		foreach($auto_form_defaults as $field => $value)
@@ -150,17 +150,17 @@ class AutoForm
 		$this->validator->id = $this->id;
 
 		$this->fields = $this->data->getFields();
-		
+
 		$filter = $this->data->getFilter();
-		
+
 		// Add in a default renderer for each field
 		foreach($this->fields as $field => $type)
 		{
 			if ($filter && $filter->isExcluded($field)) continue;
-			
+
 			$this->renderers[$field] = $this->createRenderer($field);
 		}
-		
+
 		$aliases = $this->data->getFieldAliases();
 		// Read in default alias definitions from DataItem
 		if ($aliases)
@@ -170,16 +170,16 @@ class AutoForm
 				$this->alias($field, $alias);
 			}
 		}
-		
+
 		$pks = $this->data->getPrimaryKeyList();
 		foreach($pks as $p)
 		{
 			$this->hide($p);
 		}
-		
+
 		$this->layout = AutoFormLayout::create($this->default_layout, $this);
 	}
-	
+
 	/**
 	 * Returns the target data item for the form
 	 */
@@ -192,16 +192,16 @@ class AutoForm
 	{
 		$this->dataSet = $params;
 	}
-	
+
 	/**
 	 * Override the default layout manager
-	 * 
+	 *
 	 */
 	function setLayout($layout)
 	{
 		$this->layout = $layout;
 	}
-	
+
 	/**
 	 * This factory method creates a FieldRender based on the type
 	 * of the specified field.
@@ -214,14 +214,14 @@ class AutoForm
 		if (!array_key_exists($field, $this->fields)) return null;
 
 		$type = $this->fields[$field];
-		
+
 		if ($type == "Timestamp") return null; // No field renderer required for this type
-		
+
 		if (array_key_exists($type, AutoForm::$fieldRendererMap))
 		{
 			return new AutoForm::$fieldRendererMap[$type]($this, $field);
 		}
-		
+
 		throw new FakoliException("AutoForm::createRenderer(): Unknown type '$type'");
 	}
 
@@ -234,7 +234,7 @@ class AutoForm
 	{
 		AutoForm::$fieldRendererMap[$type] = $rendererClass;
 	}
-	
+
 	/**
 	 * Creates default validators for fields in the form. Currently this adds Date format validators
 	 * to all date fields - other fields are not affected.
@@ -245,12 +245,12 @@ class AutoForm
 	function addDefaultValidators()
 	{
 		$filter = $this->data->getFilter();
-		
+
 		foreach(array_keys($this->fields) as $field)
 		{
 			if ($filter && $filter->isExcluded($field)) continue;
 			if ($this->readonly[$field]) continue; // No need to validate readonly fields
-			
+
 			$renderer = $this->getRenderer($field);
 			if ($renderer)
 			{
@@ -275,7 +275,7 @@ class AutoForm
 	{
 		return $this->validator;
 	}
-	
+
 	/**
 	 * Set this AutoForm to be a subordinate form within a CompositeAutoForm.
 	 */
@@ -283,11 +283,11 @@ class AutoForm
 	{
 		$this->subordinate = true;
 	}
-	
+
 	function configureValidators()
 	{
 		if ($this->validatorsConfigured) return;
-		
+
 		$this->addDefaultValidators();
 
 		foreach($this->validator->validators as $v)
@@ -295,10 +295,10 @@ class AutoForm
 			$v->title = (!$v->title) ? $this->prettifyFieldName($v->field) : $v->title;
 			$v->readOnly = $this->isReadOnly($v->field) || $this->isHidden($v->field);
 		}
-		
+
 		$this->validatorsConfigured = true;
 	}
-	
+
 	/**
 	 * This method writes any Javascript code that will be required for the generated
 	 * form to operate, including code for Rich Text Editors, Date Pickers and field validation.
@@ -312,11 +312,11 @@ class AutoForm
 		ob_start();
 
 		$this->configureValidators();
-		
+
 		$obj =& $this->data;
 		$filter = $obj->getFilter();
 		$pk = $obj->getPrimaryKey();
-		
+
 		$script = "";
 		foreach(array_keys($this->fields) as $field)
 		{
@@ -334,12 +334,12 @@ class AutoForm
 		{
 			$r['renderer']->renderScript($r['field']);
 		}
-		
+
 		echo "<script type='text/javascript'>\n";
 		echo $this->validator->writeScript();
 		echo "\n\n";
 		echo "function onSubmit{$this->id}(form)\n{\n";
-		
+
 		echo "\tif (validate_{$this->id} != null && !validate_{$this->id}(form)) return false;\n";
 
 		foreach(array_keys($this->fields) as $field)
@@ -363,16 +363,16 @@ class AutoForm
 		{
 			echo "\t if (!{$this->onSubmitHandler}(form)) return false;\n;";
 		}
-		
+
 		if ($this->interstitialMessage)
 		{
 			echo "\tinterstitial('".jsSafe($this->interstitialMessage)."');\n;";
 		}
-		
+
 		echo "\treturn true;\n}\n\n";
-		
+
 		echo "\twindow.addEvent('domready', function() {\n";
-		
+
 		if ($this->ajaxSubmitHandler)
 		{
 ?>
@@ -382,12 +382,12 @@ document.id('<?echo $this->id?>').iFrameFormRequest({'onRequest': function() { r
 		}
 
 		// Add collapsible group handlers
-		
+
 		foreach($this->collapsibleGroups as $group => $toggle)
 		{
 			$groupID = $this->id . "_" . codify($group) . "_group";
 			$toggleID = $this->id . "_" . $toggle;
-			
+
 			echo "\tdocument.id('$toggleID').addEvent('click', function(e) { if (this.checked) {  document.id('$groupID').setStyle('opacity', 0).removeClass('collapsed').addClass('expanded').fade('in'); } else { document.id('$groupID').removeClass('expanded').addClass('collapsed'); } });\n";
 		}
 		echo "\t});\n";
@@ -426,9 +426,9 @@ document.id('<?echo $this->id?>').iFrameFormRequest({'onRequest': function() { r
 					$rField = $renderer->field;
 				if($rField == $field)
 					return $renderer;
-			}					
+			}
 		}
-		
+
 		trace("AutoForm::getRenderer(): Unknown field: $field", 2);
 		return null;
 	}
@@ -495,7 +495,7 @@ document.id('<?echo $this->id?>').iFrameFormRequest({'onRequest': function() { r
 	{
 		return array_key_exists($field, $this->hidden) ? $this->hidden[$field] : false;
 	}
-	
+
 	/**
 	 * Adds an annotation (such as brief explanatory text) to the specified field.
 	 * The annotation is displayed next to the field when the form is renderered.
@@ -530,7 +530,7 @@ document.id('<?echo $this->id?>').iFrameFormRequest({'onRequest': function() { r
 	/**
 	 * Define a field grouping
 	 * @param string $name the legend to use for the group
-	 * 
+	 *
 	 */
 	function group($name)
 	{
@@ -539,11 +539,11 @@ document.id('<?echo $this->id?>').iFrameFormRequest({'onRequest': function() { r
 		{
 			$group[] = func_get_arg($i);
 		}
-		
+
 		$this->groups[$name] = $group;
 		return $group;
 	}
-	
+
 	/**
 	 * Allows a group to be shown or hidden based on the value of another control
 	 * @param string $name the name of the group
@@ -553,7 +553,7 @@ document.id('<?echo $this->id?>').iFrameFormRequest({'onRequest': function() { r
 	{
 		$this->collapsibleGroups[$name] = $toggleControl;
 	}
-	
+
 	/**
 	 * Use this method to hide the labels for the specified fields in the form.
 	 */
@@ -564,7 +564,7 @@ document.id('<?echo $this->id?>').iFrameFormRequest({'onRequest': function() { r
 			$this->getRenderer($naked)->hideLabel = true;
 		}
 	}
-	
+
 	/**
 	 * Call this method to make one or more fields read-only in the form's user interface.
 	 * For instance, calling readonly("field1", "field3") would cause field1 and field3
@@ -603,7 +603,7 @@ document.id('<?echo $this->id?>').iFrameFormRequest({'onRequest': function() { r
 			}
 		}
 	}
-	
+
 	/**
 	 * Check if this field exists as an additional field
 	 */
@@ -640,12 +640,12 @@ document.id('<?echo $this->id?>').iFrameFormRequest({'onRequest': function() { r
 	{
 		if ($this->data->hasField($field))
 		{
-			$this->validator->add(new RequiredIfCheckedValidator($field, $checkbox, 
-																 $fieldTitle ? $fieldTitle : $this->prettifyFieldName($field), 
+			$this->validator->add(new RequiredIfCheckedValidator($field, $checkbox,
+																 $fieldTitle ? $fieldTitle : $this->prettifyFieldName($field),
 																 $checkboxTitle ? $checkboxTitle : $this->prettifyFieldName($checkbox), $message));
 		}
 	}
-	
+
 	/**
 	 * Validate the user input for the specified field against a regular expression, outputting
 	 * the supplied message if the entered value does not match. This can be used to provide general
@@ -662,17 +662,17 @@ document.id('<?echo $this->id?>').iFrameFormRequest({'onRequest': function() { r
 			$this->validator->add(new RegularExpressionValidator($field, $this->prettifyFieldName($field), $expr, $message));
 		}
 	}
-	
+
 	/**
 	 * @param string $field
 	 * @param string, Date, or DateTime $min
 	 * @param string, Date or DateTime $max
 	 * @param string $message
-	 * 
+	 *
 	 * Min can be either a static date min that the field's value
 	 * must be set to or the name of a field whose value will be
 	 * compared to the given field.
-	 * 
+	 *
 	 * E.g., start_date must be no earlier than today
 	 * or start_date must be no earlier than end_date
 	 */
@@ -683,7 +683,7 @@ document.id('<?echo $this->id?>').iFrameFormRequest({'onRequest': function() { r
 			$this->validator->add(new DateRangeValidator($field, $this->prettifyFieldName($field), $min, $max, $message));
 		}
 	}
-	
+
 	/**
 	 * Adds a uniqueness validator to the specified field(s). This is a server-side only validator
 	 * that checks that the supplied value for the field is not present for any row in the underlying
@@ -710,7 +710,7 @@ document.id('<?echo $this->id?>').iFrameFormRequest({'onRequest': function() { r
 			$this->validator->add(new UniqueValidator($field, $this->prettifyFieldName($field), $this->data, $message, $constraint));
 		}
 	}
-	
+
 	/**
 	 * Adds a range validator to the specified field.
 	 */
@@ -738,7 +738,7 @@ document.id('<?echo $this->id?>').iFrameFormRequest({'onRequest': function() { r
 
 	/**
 	 * Adds a password validator to the specified field.
-	 * 
+	 *
 	 * @param string $field The name of the field.
 	 * @param string The title of the field
 	 */
@@ -748,13 +748,13 @@ document.id('<?echo $this->id?>').iFrameFormRequest({'onRequest': function() { r
 	}
 
 	/**
-	 * Disable autocomplete for the selected fields. If no fields are specified, 
+	 * Disable autocomplete for the selected fields. If no fields are specified,
 	 * autocomplete is disabled for all the fields in the form.
 	 */
 	function disableAutoComplete()
 	{
 		$numArgs = func_num_args();
-		
+
 		if ($numArgs == 0)
 		{
 			foreach($this->data->fields as $field => $type)
@@ -776,14 +776,14 @@ document.id('<?echo $this->id?>').iFrameFormRequest({'onRequest': function() { r
 			}
 		}
 	}
-			
+
 	/**
 	 * Adds a custom button to the form.
 	 *
 	 * @param string $text the button label text
 	 * @param string $url the URL to handle the button press
 	 * @param string $confirm optional confirmation message
-	 * @param boolean $isScript true if the url is javascript code to execute, 
+	 * @param boolean $isScript true if the url is javascript code to execute,
 	 * 							false if it is a URL to redirect to
 	 */
 	function button($text, $url, $confirm = null, $isScript = false)
@@ -802,7 +802,7 @@ document.id('<?echo $this->id?>').iFrameFormRequest({'onRequest': function() { r
 		$this->ajaxSubmitHandler = $success;
 		$this->ajaxFailureHandler = $failure;
 	}
-	
+
 	/**
 	 * Determine if this form is the one that was submitted. Useful for managing pages
 	 * with multiple forms.
@@ -819,7 +819,7 @@ document.id('<?echo $this->id?>').iFrameFormRequest({'onRequest': function() { r
 	function drawForm()
 	{
 		if ($this->readOnlyForm) return $this->drawReadOnly();
-		
+
 		$obj =& $this->data;
 		$pk = $obj->getPrimaryKey();
 
@@ -832,30 +832,30 @@ document.id('<?echo $this->id?>').iFrameFormRequest({'onRequest': function() { r
 		//echo "<!--\n";
 		//print_r($this);
 		//echo "\n-->\n";
-		
+
 		if (!$this->subordinate)
 		{
 			echo "<form id='{$this->id}' method='{$this->method}' action='{$this->action}' enctype='multipart/form-data'";
 			if (!$this->ajaxSubmitHandler) echo " onsubmit='return onSubmit{$this->id}(this);'";
 			echo ">\n";
 		}
-		
+
 		if ($this->id)
 		{
 			echo "<input type='hidden' name='#FORMID#' value='{$this->id}'/>";
 		}
-		
+
 		foreach(array_keys($this->hidden) as $hidden)
 		{
 			echo "<input id='{$this->id}_{$hidden}' type='hidden' name='$hidden' value='".htmlSafe($obj->get($hidden))."'/>\n";
 		}
 
 		$this->layout->startUngrouped();
-		
-		if ($this->buttons_at_top && !$this->subordinate) 
+
+		if ($this->buttons_at_top && !$this->subordinate)
 		{
 			$this->layout->startButtonLine();
-			
+
 			$this->drawSubmitButtons($obj, $pk, $submitLabel);
 
 			$this->drawButtons();
@@ -871,27 +871,27 @@ document.id('<?echo $this->id?>').iFrameFormRequest({'onRequest': function() { r
 		}
 
 		$this->renderAllFields($obj);
-					
+
 		if (!$this->subordinate)
-		{		
+		{
 			$this->layout->startButtonLine();
 
 			$this->drawSubmitButtons($obj, $pk, $submitLabel);
 			$this->drawButtons();
-	
+
 			$this->layout->endButtonLine();
 		}
 
 		$this->layout->endUngrouped();
-		
+
 		if (!$this->subordinate)
 		{
 			echo "</form>\n";
 		}
 	}
-	
+
 	/*
-	 * JDG 12/17/2010 - break out from drawForm into into function 
+	 * JDG 12/17/2010 - break out from drawForm into into function
 	 */
 	function drawSubmitButtons($obj, $pk, $submitLabel)
 	{
@@ -907,37 +907,37 @@ document.id('<?echo $this->id?>').iFrameFormRequest({'onRequest': function() { r
 		if ($obj->get($pk) && $this->allowDelete)
 		{
 			$deleteLabel = ($this->deleteLabel) ? $this->deleteLabel : "Delete this ".$obj->prettifyClassName();
-				
+
 			echo "&nbsp;&nbsp;&nbsp;&nbsp;<input type='submit' class='{$this->buttonCSS}' name='{$this->id}_delete'
 		      value='$deleteLabel'
 		      onclick='return confirm(\"Are you sure you want to delete this ".$obj->prettifyClassName()."?\");'/>";
-		}	
+		}
 	}
-	
+
 	function renderAllFields($obj)
 	{
 		$this->renderedFields = array();
-		
+
 		if($this->additional_at_top)
-			$this->renderAdditionalFields($obj);	
+			$this->renderAdditionalFields($obj);
 		$this->renderFields($obj);
 		if(!$this->additional_at_top)
-			$this->renderAdditionalFields($obj);		
+			$this->renderAdditionalFields($obj);
 	}
-	
+
 	/*
 	 * JDG 9/14/2010
-	 * Break out this function to facilitate inheritence 
+	 * Break out this function to facilitate inheritence
 	 * when fields needs custom layout.
 	 */
 	function renderFields($obj)
 	{
 		$filter = $obj->getFilter();
-		
+
 		if (count($this->groups) > 0)
 		{
 			$this->layout->endUngrouped();
-			
+
 			foreach($this->groups as $legend => $fields)
 			{
 				$collapsible = array_key_exists($legend, $this->collapsibleGroups);
@@ -946,24 +946,24 @@ document.id('<?echo $this->id?>').iFrameFormRequest({'onRequest': function() { r
 					$cf = $this->collapsibleGroups[$legend];
 					$collapsed = !$this->data->$cf;
 				}
-				
+
 				$this->layout->startGroup($legend, $collapsible, $collapsed);
-				
+
 				foreach($fields as $field)
 				{
 					if ($field != $pk && !array_key_exists($field, $this->hidden) && !array_key_exists($field, $this->renderedFields) && !($filter && $filter->isExcluded($field)))
 					{
 						$this->renderOneField($field);
-					}					
+					}
 				}
-				
+
 				$this->layout->endGroup();
 			}
-			
+
 			$this->layout->startUngrouped();
-			
+
 		}
-		
+
 		foreach(array_keys($this->fields) as $field)
 		{
 			if ($field != $pk && !array_key_exists($field, $this->hidden) && !array_key_exists($field, $this->renderedFields) && !($filter && $filter->isExcluded($field)))
@@ -980,7 +980,7 @@ document.id('<?echo $this->id?>').iFrameFormRequest({'onRequest': function() { r
 	function renderOneField($field)
 	{
 		$renderer = $this->getRenderer($field);
-		
+
 		if(!$renderer && !$this->data->hasField($field) && $this->data->fields[$field] != "Timestamp")
 		{
 			foreach($this->additional as $r)
@@ -991,7 +991,7 @@ document.id('<?echo $this->id?>').iFrameFormRequest({'onRequest': function() { r
 					$field = $renderer->field;
 			}
 		}
-			
+
 		if ($renderer)
 		{
 			if ($this->readonly[$field] || $this->readOnlyForm)
@@ -1002,11 +1002,11 @@ document.id('<?echo $this->id?>').iFrameFormRequest({'onRequest': function() { r
 			{
 				$renderer->renderField($field);
 			}
-			
+
 			$this->renderedFields[$field] = true;
 		}
 	}
-	
+
 	/*
 	 * JDG 12/17/2010 - break out into function to allow option
 	 * to render additional fields at the top.
@@ -1020,10 +1020,10 @@ document.id('<?echo $this->id?>').iFrameFormRequest({'onRequest': function() { r
 			$field = $r['field'];
 			if(!$field)
 				$field = $renderer->field;
-		
+
 			if(array_key_exists($field, $this->renderedFields))
 				continue;
-					
+
 			if ($this->readonly[$field] || $this->readOnlyForm)
 			{
 				$renderer->renderReadOnly($field);
@@ -1032,7 +1032,7 @@ document.id('<?echo $this->id?>').iFrameFormRequest({'onRequest': function() { r
 			{
 				$renderer->renderField($field);
 			}
-		}		
+		}
 	}
 
 	/**
@@ -1044,7 +1044,7 @@ document.id('<?echo $this->id?>').iFrameFormRequest({'onRequest': function() { r
 		foreach($this->buttons as $button)
 		{
 			$url = ($button['isScript']) ? $button['url'] : "go('{$button['url']}');";
-			
+
 			if ($button['confirm'])
 			{
 				$link = "if (confirm('".jsSafe($button['confirm'])."')) $url; return false;";
@@ -1065,13 +1065,24 @@ document.id('<?echo $this->id?>').iFrameFormRequest({'onRequest': function() { r
 	 */
 	function drawReadOnly()
 	{
+		ob_start();
 		$this->layout->startUngrouped();
-		
+
 		$obj =& $this->data;
-		
+
 		$this->renderAllFields($obj);
-		
-		$this->layout->endUngrouped();	
+
+		$this->layout->endUngrouped();
+
+		$output = ob_get_contents();
+		ob_end_clean();
+
+		// Remove any disable tags, so we don't make a disabledisable
+		$output = preg_replace('/(<input|<textarea|<select)( [^>]*)disabled(>)/', '$1$2$3', $output);
+		// Add in disable tags to everything that is disabled.
+		$output = preg_replace('/(<input|<textarea|<select)( [^>]*)(>)/', '$1$2disabled$3', $output);
+
+		echo $output . '';
 	}
 
 	/**
@@ -1099,20 +1110,20 @@ document.id('<?echo $this->id?>').iFrameFormRequest({'onRequest': function() { r
 
 			$field = strtolower($field);
 			break;
-				
+
 		case "upper":
 
 			$field = strtoupper($field);
 			break;
-			
+
 		case "first":
-			
+
 			$field = ucfirst($field);
 			break;
-			
+
 		case "word":
 		default:
-			
+
 			$field = ucwords($field);
 			break;
 		}
@@ -1144,10 +1155,10 @@ document.id('<?echo $this->id?>').iFrameFormRequest({'onRequest': function() { r
 
 		$obj =& $this->data;
 		$obj->fromPOST();
-		
+
 		$filter = $obj->getFilter();
 		$pk = $obj->getPrimaryKey();
-		
+
 		if (isset($_POST["#FORMID#"]))
 		{
 			$this->id = $_POST["#FORMID#"];
@@ -1170,7 +1181,7 @@ document.id('<?echo $this->id?>').iFrameFormRequest({'onRequest': function() { r
 		if ($this->msg != "") return false;
 
 		$this->preProcessFields($pk, $filter);
-	
+
 		if ($this->customSaveHandler)
 		{
 			if (!call_user_func_array($this->customSaveHandler, array($this))) return false;
@@ -1179,9 +1190,9 @@ document.id('<?echo $this->id?>').iFrameFormRequest({'onRequest': function() { r
 		{
 			$obj->save();
 		}
-		
+
 		$this->postProcessFields($pk, $filter);
-		
+
 		// onComplete event is fired once all processing has been completed
 
 		if ($this->onSaveComplete)
@@ -1207,7 +1218,7 @@ document.id('<?echo $this->id?>').iFrameFormRequest({'onRequest': function() { r
 				}
 			}
 		}
-		
+
 		foreach($this->additional as $r)
 		{
 			$renderer = $r['renderer'];
@@ -1216,7 +1227,7 @@ document.id('<?echo $this->id?>').iFrameFormRequest({'onRequest': function() { r
 			$renderer->preProcess($field);
 		}
 	}
-	
+
 	function postProcessFields($pk, $filter)
 	{
 		foreach (array_keys($this->fields) as $field)
@@ -1240,7 +1251,7 @@ document.id('<?echo $this->id?>').iFrameFormRequest({'onRequest': function() { r
 			$renderer->postProcess($field);
 		}
 	}
-	
+
 	function remove(&$obj)
 	{
 		$obj->delete();
@@ -1264,7 +1275,7 @@ document.id('<?echo $this->id?>').iFrameFormRequest({'onRequest': function() { r
 		$this->msg = $this->validator->validate();
 		return ($this->msg == "");
 	}
-	
+
 	/**
 	 * @deprecated
 	 *
