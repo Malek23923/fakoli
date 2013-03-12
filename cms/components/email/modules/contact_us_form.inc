@@ -97,10 +97,16 @@ if ($method == "POST")
 		
 	$subject .= $contactUs->subject;	
 	$headers .= "Reply-To: ". $contactUs->email . "\r\n";
-	
+
+	$message = "Sender: $contactUs->email\r\n\r\n";
+	$message .= "Subject: $subject\r\n\r\n";
+	$message .= "Message:\r\n";
+	$message .= $contactUs->message;
+
+
 	foreach($recipients as $recipient)
 	{
-		$handler = new Mail($emailContact, $recipient, $subject, $contactUs->message, $headers);
+		$handler = new Mail($emailContact, $recipient, $subject, $message, $headers);
 	}
 			
 	$rtn = $handler->send();
