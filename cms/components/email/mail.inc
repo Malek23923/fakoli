@@ -87,9 +87,9 @@ class Mail
 		
 	    $smtp = new SMTP;
 	    //$smtp->do_debug = 1; # sets the amount of debug information we get
-	
+	    
 	    # connect to the smtp server
-	    if(!$smtp->connect($this->server, $this->smtp_port)) 
+	    if(!$smtp->connect($this->server, $this->port)) 
 	    {
 	        die ("Error: " . $smtp->error["error"] . "\n");
 	    }
