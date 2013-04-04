@@ -1177,10 +1177,10 @@ document.id('<?echo $this->id?>').iFrameFormRequest({'onRequest': function() { r
 			return true;
 		}
 
+		$this->preProcessFields($pk, $filter);
+		
 		$this->msg = $this->validator->validate();
 		if ($this->msg != "") return false;
-
-		$this->preProcessFields($pk, $filter);
 
 		if ($this->customSaveHandler)
 		{
