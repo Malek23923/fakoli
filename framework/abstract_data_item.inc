@@ -404,13 +404,13 @@ abstract class AbstractDataItem
 	
 		case Date:
 		case DateTime:
-			
+
 			$query .= ($val) ? $db->quote($this->reformatToSQLDate($val)) : "NULL";
 			break;
 			
 		case Timestamp:
-			
-			$query .= $db->quote(date("Y-m-d H:i:s"));
+
+			$query .= ($val) ? $db->quote($val) : $db->quote(date("Y-m-d H:i:s"));
 			break;
 			
 		case Boolean:
@@ -426,7 +426,7 @@ abstract class AbstractDataItem
 		
 			$query .= $db->quote($val);
 			break;
-		}		
+		}	
 
 		return $query;			
 	}
