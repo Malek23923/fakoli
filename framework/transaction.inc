@@ -68,7 +68,7 @@ class DataTransaction
 			throw new DataItemException("Attempt to rollback a previously completed transaction");
 		}			
 		
-		$this->conn->rollback();
+		$this->conn->rollBack();
 		$this->conn = null;
 	}
 	
