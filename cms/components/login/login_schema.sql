@@ -18,3 +18,16 @@ CREATE TABLE `login_token` (
 ) ENGINE=InnoDB;
 
 -- END Version 1.0
+
+-- START Version 1.1
+
+CREATE TABLE `access_log` (
+  `access_id` INTEGER UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+  `timestamp` DATETIME NOT NULL,
+  `action` VARCHAR(100) NOT NULL,
+  `username` VARCHAR(100),
+  `password` VARCHAR(100),
+  `ip` VARCHAR(100)
+) ENGINE = InnoDB;
+
+-- END Version 1.1

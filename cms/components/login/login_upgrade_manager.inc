@@ -49,7 +49,8 @@ Fakoli::using("login", "component");
 class LoginUpgradeManager extends UpgradeManager
 {
 	var $updateMap = array(
-			"1.0"		=>	"sql:Initial Installation"
+			"1.0"		=>	"sql:Initial Installation",
+			"1.1"		=>	"sql:add access_log"
 	);
 	
 	function LoginUpgradeManager()
@@ -57,6 +58,6 @@ class LoginUpgradeManager extends UpgradeManager
 		$this->component_name = "login";
 
 		// sets the sqlFile name according to default
-		parent::UpgradeManager();		
+		parent::UpgradeManager();
 	}
 }
