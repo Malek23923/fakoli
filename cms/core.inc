@@ -925,19 +925,8 @@ else
 
 	if ($method == "POST" && $_POST["Login"])
 	{
-		$access_log = new AccessLog();
-		$access_log->timestamp = date('Y-m-d H:i:s');
-		$access_log->username = $_POST['username'];
-		$access_log->ip = $_SERVER["REMOTE_ADDR"];
-		$access_log->action = 'login';
-		$access_log->save();
-
 		$mgr = new LoginManager();
-		$mgr->validateLogin(); // redirects if login was successful so following code is never run
-
-		$access_log->action = (LoginManager::$error)? 'login_failed': 'login';
-		$access_log->save();
-		
+		$mgr->validateLogin();
 	}
 }
 

@@ -23,6 +23,7 @@ CREATE TABLE `login_token` (
 
 CREATE TABLE `access_log` (
   `access_id` INTEGER UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+  `user_id` INTEGER UNSIGNED,
   `timestamp` DATETIME NOT NULL,
   `action` VARCHAR(100) NOT NULL,
   `username` VARCHAR(100),

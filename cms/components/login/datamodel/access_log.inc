@@ -6,6 +6,7 @@ class AccessLog extends DataItem
 {
 	var $fields = array(
 			"access_id"			=>	Number,
+			"user_id"			=>	Number,
 			"timestamp"			=>	DateTime,
 			"action"			=>	String,
 			"username"			=>	String,

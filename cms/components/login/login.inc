@@ -129,9 +129,17 @@ class LoginManager
 			return LoginManager::$error = "Incorrect user name or password.";			
 	
 		$user = $mgr->validatePassword($username, $password);
+		$access_log = new AccessLog();
+		$access_log->timestamp = date('Y-m-d H:i:s');
+		$access_log->username = $username;
+		$access_log->ip = $_SERVER["REMOTE_ADDR"];
 
 		if ($user)
 		{
+			$access_log->user_id = $user->user_id;
+			$access_log->action = 'login';
+			$access_log->save();
+
 			session_start();
 			
 			$_SESSION["user"] = $user;
@@ -146,12 +154,19 @@ class LoginManager
 			
 			if ($user)
 			{
+				$access_log->user_id = $user->user_id;
+				$access_log->action = 'token_login';
+				$access_log->save();
+				
 				$_SESSION["user"] = $user;
 				$mgr->loadDefaultSession($user);
 				redirect($mgr->getPasswordResetPage());
 			}
 			else
-			{	
+			{
+				$access_log->action = 'failed_login';
+				$access_log->save();
+
 				LoginManager::$error = "Incorrect user name or password.";
 			}
 		}
@@ -175,8 +190,16 @@ class LoginManager
 	
 		$user = $mgr->validatePassword($username, $password);
 
+		$access_log = new AccessLog();
+		$access_log->timestamp = date('Y-m-d H:i:s');
+		$access_log->username = $username;
+		$access_log->ip = $_SERVER["REMOTE_ADDR"];
+		
 		if ($user)
 		{
+			$access_log->user_id = $user->user_id;
+			$access_log->action = 'login';
+			$access_log->save();
 			session_start();
 			
 			$_SESSION["user"] = $user;
@@ -190,12 +213,18 @@ class LoginManager
 			
 			if ($user)
 			{
+				$access_log->user_id = $user->user_id;
+				$access_log->action = 'token_login';
+				$access_log->save();
+
 				$_SESSION["user"] = $user;
 				$mgr->loadDefaultSession($user);
 				return "OK|".$mgr->getPasswordResetPage();
 			}
 			else
-			{	
+			{
+				$access_log->action = 'failed_login';
+				$access_log->save();
 				LoginManager::$error = "Incorrect user name or password.";
 				return "ERROR|".LoginManager::$error;
 			}
