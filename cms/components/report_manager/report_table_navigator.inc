@@ -86,9 +86,9 @@ class ReportFilterNavigator
 		
 		foreach($this->tables as $table)
 		{
-			$display = $table->selected ? "block" : "none";
+			$filter_hide = $table->selected ? "filter_show" : "filter_hide";
 			
-			echo "<div class='report_filter' id='{$table->class}' style='display: $display'><h3>".$table->getTitle()."</h3>\n";
+			echo "<div class='report_filter $filter_hide' id='{$table->class}'><h3>".$table->getTitle()."</h3>\n";
 			
 			echo "<div class='filter'>\n";
 			echo "<table ";
