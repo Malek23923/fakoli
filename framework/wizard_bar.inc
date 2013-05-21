@@ -15,9 +15,9 @@
  The above copyright notice and this permission notice shall be
  included in all copies or substantial portions of the Software.
 
- Except as contained in this notice, the name(s) of the above 
- copyright holders shall not be used in advertising or otherwise 
- to promote the sale, use or other dealings in this Software 
+ Except as contained in this notice, the name(s) of the above
+ copyright holders shall not be used in advertising or otherwise
+ to promote the sale, use or other dealings in this Software
  without prior written authorization.
 
  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
@@ -34,20 +34,20 @@
 Fakoli::usingFeature("tab_bar");
 
 
- 
+
 /**
  * The WizardBar class is a user-interface control that
  * draws a stepped nav bar for multi-stage workflows.
- * 
- * 
+ *
+ *
  */
 class WizardBar extends TabBar
 {
 	var $spacer = "&nbsp;&raquo;&nbsp;";
-	
+
 	/**
 	 * Construct a new WizardBar control.
-	 * 
+	 *
 	 * @param string $queryString the Query String portion of the page URIs
 	 * @param array  $tabs the steps in the workflow
 	 * @param string $queryString the query string to append to the links
@@ -59,7 +59,7 @@ class WizardBar extends TabBar
 	{
 		parent::TabBar($id, $tabs, $queryString, $useQueryString, $showNumber);
 	}
-	
+
 	/**
 	 * Writes the HTML for this control to standard output.
 	 */
@@ -70,19 +70,19 @@ class WizardBar extends TabBar
 		$count   = 0;
 
 	    echo "<div id='{$this->id}'";
-	    
+
 	    if ($this->cssClass) echo " class='{$this->cssClass}'";
-	    
-	    echo "><ul>";		
+
+	    echo "><ul>";
 		foreach($this->tabs as $text => $url)
 	    {
-     		
+
  	    	++$count;
         	$active = "";
         	$style = "";
 
         	if (!$first)
-     		{	
+     		{
      			$spacer = $this->spacer;
         	}
         	else
@@ -91,21 +91,21 @@ class WizardBar extends TabBar
             	$first = false;
             	$style = "first ";
         	}
-      	
+
           	if ($url == $this->page)
 	        {
 	        	$style .= "current";
-	        	$future = true;	        
+	        	$future = true;
 	        }
-     		elseif (($future AND ($this->queryString == "" && 
+     		elseif (($future AND ($this->queryString == "" &&
      			$this->useQueryString && $count > 1)) OR $this->states[$url] == 'disable')
 	        {
 	     		$active = " class='disabled'";
 	     		$style .= "disabled";
 	        }
-	  
+
         	if ($this->showNumber) $text = "$count.&nbsp;$text";
-         
+
          	if ($this->useQueryString)
          	{
 	        	$dest = ($this->queryString!="") ? $this->appendQueryString($url, $this->queryString) :"#";
@@ -114,27 +114,34 @@ class WizardBar extends TabBar
          	{
          		$dest = ($url == $this->page) ? "#" : $url;
          	}
-        
+
          	if ($this->anchor)
          	{
          		$dest = ($dest != "#") ? "$dest#{$this->anchor}" : "#{$this->anchor}";
          	}
-         	
+
          	if ($this->showStates)
          	{
 	         	if (array_key_exists($url, $this->flags))
 	         	{
-	         		$text = "<img src='{$this->states[$this->flags[$url]]}' style='border: none; display: inline-block;vertical-align: middle'/>&nbsp;$text";         	
+	         		$text = "<img src='{$this->states[$this->flags[$url]]}' style='border: none; display: inline-block;vertical-align: middle'/>&nbsp;$text";
 	         	}
 	         	else if ($this->defaultStateImage)
 	         	{
 	         		$text = "<img src='{$this->defaultStateImage}' style='border: none; display: inline-block;vertical-align: middle'/>&nbsp;$text";
 	         	}
          	}
-         	
-             echo "<li class='$style'>$spacer<a href=\"$dest\"$active>$text</a></li>";
-        	}	
-			
+
+         	if ($dest == '#')
+         	{
+         		echo "<li class='$style'>$spacer<a $active>$text</a></li>";
+         	}
+         	else
+         	{
+         		echo "<li class='$style'>$spacer<a href=\"$dest\"$active>$text</a></li>";
+         	}
+    	}
+
     	// close wizard div
     	echo "</ul></div>\n";
  	}
