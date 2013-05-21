@@ -138,6 +138,30 @@ div.report_filter
 	cursor: pointer;
 }
 
+.filter_hide {
+	display: none;
+}
+
+.filter_show {
+	display: block;
+}
+
+
+#custom_report_results tr th:first-child {
+	display:none;
+}
+#custom_report_results tr td:first-child {
+	display: none;
+}
+
+#IRS_Exhibitor_Report_Hack {
+	display:none;
+}
+
+#table_IRS_Exhibitor_Report_Hack {
+	display:none;
+}
+
 div.report_filter.collapsed
 {
 	background-image: url(/components/report_manager/images/report_filter_closed.png);
