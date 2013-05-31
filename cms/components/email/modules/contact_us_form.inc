@@ -94,24 +94,31 @@ if ($method == "POST")
 	{
 		$subject = $contactTopic->topic . " ";
 	}
-		
-	$subject .= $contactUs->subject;	
-	$headers .= "Reply-To: ". $contactUs->email . "\r\n";
-
-	$message = "Sender: $contactUs->email\r\n\r\n";
-	$message .= "Subject: $subject\r\n\r\n";
-	$message .= "Message:\r\n";
-	$message .= $contactUs->message;
-
-
-	foreach($recipients as $recipient)
+	if ($contactUs->subject && $contactUs->email && $contactUs->message && $contactUs->full_name)
 	{
-		$handler = new Mail($emailContact, $recipient, $subject, $message, $headers);
+		$subject .= $contactUs->subject;
+		$headers .= "Reply-To: ". $contactUs->email . "\r\n";
+
+		$message = "Sender: $contactUs->email\r\n\r\n";
+		$message .= "Subject: $subject\r\n\r\n";
+		$message .= "Message:\r\n";
+		$message .= $contactUs->message;
+
+
+		foreach($recipients as $recipient)
+		{
+			$handler = new Mail($emailContact, $recipient, $subject, $message, $headers);
+		}
+				
+		$rtn = $handler->send();
+		$msg = ($rtn==true) ? 1 : 2;
+		redirect("/$identifier?msg=$msg");
 	}
-			
-	$rtn = $handler->send();
-	$msg = ($rtn==true) ? 1 : 2;
-	redirect("/$identifier?msg=$msg");
+	else
+	{
+		echo "<p class='error'>Please fill in your full name, email, subject and message.</p>";
+		$msg = true;
+	}
 }
 
 
