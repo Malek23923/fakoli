@@ -116,7 +116,7 @@ if ($method == "POST")
 	}
 	else
 	{
-		echo "<p>Please fill in your full name, email, subject and message</p>";
+		echo "<p class='error'>Please fill in your full name, email, subject and message.</p>";
 		$msg = true;
 	}
 }
