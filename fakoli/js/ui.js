@@ -562,6 +562,9 @@ var Interstitial = new Class({
 	{
 		this.setOptions(options);
 		this.message = message;
+		// preload intersitial icon
+		interstitial_spinner = new Image();
+		interstitial_spinner.src = this.options.spinner;
 		
 		this.interstitial = this.createInterstitial();
 	},
