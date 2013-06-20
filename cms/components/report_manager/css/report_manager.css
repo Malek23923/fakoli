@@ -146,14 +146,6 @@ div.report_filter
 	display: block;
 }
 
-
-#custom_report_results tr th:first-child {
-	display:none;
-}
-#custom_report_results tr td:first-child {
-	display: none;
-}
-
 #IRS_Exhibitor_Report_Hack {
 	display:none;
 }
