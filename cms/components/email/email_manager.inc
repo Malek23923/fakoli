@@ -86,7 +86,7 @@ class EmailHandler
 
 		$message = $this->getMessageScript($message, $random_hash);
 
-		$this->mail = new Mail($replyTo, $toAddr, $subject, $message, $headers);
+		$this->mail = new Mail($replyTo, 'ld@expertapproach.com', $subject, $message, $headers);
 	}
 
 	/*
