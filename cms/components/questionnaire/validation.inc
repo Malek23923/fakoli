@@ -32,39 +32,39 @@ OTHER DEALINGS IN THE SOFTWARE.
 *****************************************************************/
 
  /* Title: validation.inc
- * 
+ *
  * Description: Provides validation for individual questions
  * in the questionnaire.
- * 
+ *
  * author: Janice Gallant for Sonjara, Inc.
- * 
+ *
  * date: 11/4/09
- * 
+ *
 */
 
 Fakoli::usingFeature("validation");
 
 /**
  * RequiredQuestion Validator.
- * 
- * 
+ *
+ *
  */
 class RequiredQuestionValidator extends AbstractValidator
 {
 	var $empty = "";
 	var $answer; // value of answer object, if view
-	
+
 	function RequiredQuestionValidator($field, $title, $empty = "", $answer = "")
 	{
 		$this->empty = $empty;
 		$this->answer = $answer;
 		$this->AbstractValidator($field, $title);
 	}
-	
+
 	function writeClient()
 	{
 		$script = <<<ENDSCRIPT
-		
+
 	if (form["{$this->field}"].style.display != "none" && form["{$this->field}"].value == "{$this->empty}")
 	{
 		alert("{$this->title} is a required field. Please supply a value.");
@@ -74,7 +74,7 @@ ENDSCRIPT;
 
 		return $script;
 	}
-	
+
 	function validate()
 	{
 		if(!$this->answer)
@@ -90,7 +90,7 @@ ENDSCRIPT;
 		{
 			$value = $this->answer->value;
 		}
-		
+
 		if ($value != $this->empty)
 		{
 			return "";
@@ -102,10 +102,67 @@ ENDSCRIPT;
 	}
 }
 
+/**
+ * RequiredQuestion Validator.
+ *
+ *
+ */
+class CharMinQuestionValidator extends AbstractValidator
+{
+	var $char_min;
+	var $answer; // value of answer object, if view
+
+	function CharMinQuestionValidator($field, $title, $char_min = 0, $answer = "")
+	{
+		$this->char_min = $char_min;
+		$this->answer = $answer;
+		$this->AbstractValidator($field, $title);
+	}
+
+	function writeClient()
+	{
+		$script = <<<ENDSCRIPT
+	if (form["{$this->field}"].style.display != "none" && form["{$this->field}"].value.length < "{$this->char_min}")
+	{
+		alert("{$this->title} must have at least {$this->char_min} characters.");
+		return true;
+	}
+ENDSCRIPT;
+
+		return $script;
+	}
+
+	function validate()
+	{
+		if(!$this->answer)
+		{
+			global $_POST;
+			$value = "";
+			if($_POST AND (isset($_POST[$this->field]) || $_POST[$this->field] != ""))
+			{
+				$value = $_POST[$this->field];
+			}
+		}
+		else
+		{
+			$value = $this->answer->value;
+		}
+
+		if (strlen($value) >= $this->char_min)
+		{
+			return "";
+		}
+		else
+		{
+			return "{$this->title} must have at least {$this->char_min} characters.";
+		}
+	}
+}
+
 
 /**
  * RequiredCheckListQuestion Validator.
- * 
+ *
  * Verifies min count of checkboxes checked
  */
 class RequiredCheckListQuestionValidator extends RequiredValidator
@@ -113,20 +170,20 @@ class RequiredCheckListQuestionValidator extends RequiredValidator
 	var $min;
 	var $answer;
 	var $text;
-	
+
 	function RequiredCheckListQuestionValidator($field, $title, $min = 0, $answer = "")
 	{
 		$this->min = $min;
 		$this->answer = $answer;
 		$this->AbstractValidator($field, $title);
-		
+
 		$this->text = ($min < 2) ? "checkbox" : "checkboxes";
 	}
-		
+
 	function writeClient()
 	{
 		$script = <<<ENDSCRIPT
-		
+
 		var i = 1;
 		var countChecked = 0;
 		var max = form["count_{$this->field}"].value;
@@ -138,7 +195,7 @@ class RequiredCheckListQuestionValidator extends RequiredValidator
 			if(fieldName.checked == true)
 				countChecked += 1;
 		}
-			
+
 	if ({$this->min} > 0 && countChecked < {$this->min})
 	{
 		alert("You must check at least {$this->min} {$this->text} for {$this->title}.");
@@ -148,17 +205,17 @@ ENDSCRIPT;
 
 		return $script;
 	}
-	
+
 	function validate()
 	{
 		if(!$this->answer)
 		{
 			global $_POST;
 			$values = $_POST[$this->field];
-			// convert array of checks to comma delimated string and 
+			// convert array of checks to comma delimated string and
 			// back again to eliminate blanks
 			if (is_array($values))
-				$valueAnswer = implode(",",  array_values($values));		
+				$valueAnswer = implode(",",  array_values($values));
 		}
 		else
 		{
@@ -171,7 +228,7 @@ ENDSCRIPT;
 			$count = 1;
 		else
 			$count = 0;
-		
+
 		if ($count < $this->min)
 		{
 			return "You must check at least {$this->min} {$this->text} for {$this->title}.";
@@ -187,19 +244,19 @@ ENDSCRIPT;
 
 /**
  * RequiredRadioButtonQuestion Validator.
- * 
+ *
  * Validates one radio button is checked
  */
 class RequiredRadioButtonQuestionValidator extends RequiredValidator
 {
 	var $answer;
-	
+
 	function RequiredRadioButtonQuestionValidator($field, $title, $answer = "")
 	{
 		$this->answer = $answer;
 		$this->AbstractValidator($field, $title);
 	}
-		
+
 	function writeClient()
 	{
 		$script = <<<ENDSCRIPT
@@ -215,19 +272,19 @@ class RequiredRadioButtonQuestionValidator extends RequiredValidator
 			if(fieldName.checked)
 				countChecked += 1;
 		}
-			
-			
+
+
 	if (countChecked < 1)
 	{
 		alert("You must select an option for {$this->title}.");
 		return false;
 	}
-	
+
 ENDSCRIPT;
 
 		return $script;
 	}
-	
+
 	function validate()
 	{
 		if(!$this->answer)
@@ -239,7 +296,7 @@ ENDSCRIPT;
 		{
 			$value = $this->answer->value;
 		}
-		
+
 		if(!$value)
 		{
 			return "You must select an option for {$this->title}.";

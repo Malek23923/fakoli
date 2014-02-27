@@ -73,7 +73,7 @@ class QuestionField
 	{
 		return $this->question->get($this->question->getPrimaryKey());
 	}
-	
+
 	function writeScript()
 	{
 		return "";
@@ -83,10 +83,10 @@ class QuestionField
 	{
 		return "";
 	}
-	
+
 	function drawGraph()
 	{
-		
+
 	}
 
 	/*
@@ -142,16 +142,16 @@ class QuestionField
 
 			$pk = $this->question->getPrimaryKey();
 			$field = "question_{$this->question->$pk}";
-				
+
 			$script = <<<ENDSCRIPT
-						
+
 /* <![CDATA[ */
 	function {$field}_keyup(event)
 	{
 		var form = document.getElementById('Questionnaire_form');
 		var ctrl = form['{$field}'];
 		var len = ctrl.value.length;
-		if (len >= {$this->question->char_limit}) 
+		if (len >= {$this->question->char_limit})
 		{
 			ctrl.value = ctrl.value.substring(0, {$this->question->char_limit});
 			len = {$this->question->char_limit};
@@ -184,6 +184,12 @@ ENDSCRIPT;
 		return ($this->question->required) ? "*" : "";
 	}
 
+	// Indicate required with asterisk
+	function getCharMin()
+	{
+		return (!empty($this->question->char_min)) ? "*" : "";
+	}
+
 	function getRequiredValidator()
 	{
 		// empty answer signals to validate from form and $_POST
@@ -192,6 +198,17 @@ ENDSCRIPT;
 		$answer = ($this->parent->readOnlyForm) ? $this->answer : "";
 		$question_number = ($this->question->question_number) ? $this->question->question_number : $this->parent->mgr->getQuestionNumber($this->question);
 		return new RequiredQuestionValidator("question_{$this->question->$pk}", "Question {$question_number}", "", $answer);
+	}
+
+	function getCharMinValidator()
+	{
+		// empty answer signals to validate from form and $_POST
+		$pk = $this->question->getPrimaryKey();
+		$char_min = ($this->question->char_min) ? $this->question->char_min : 0;
+
+		$answer = ($this->parent->readOnlyForm) ? $this->answer : "";
+		$question_number = ($this->question->question_number) ? $this->question->question_number : $this->parent->mgr->getQuestionNumber($this->question);
+		return new CharMinQuestionValidator("question_{$this->question->$pk}", "Question {$question_number}", $char_min, $answer);
 	}
 
 
@@ -213,12 +230,12 @@ ENDSCRIPT;
 class HeadingView extends QuestionField
 {
 	var $skipNumbering = true;
-	
+
 	function MultipleChoiceView($parent, $question)
 	{
 		$this->QuestionField($parent, $question);
-	}	
-	
+	}
+
 
 	function drawView()
 	{
@@ -254,9 +271,9 @@ class MultipleChoiceView extends QuestionField
 		$pk = $this->question->getPrimaryKey();
 		$options = explode("\n", $this->question->options);
 		$tips = explode("\n", $this->question->context_help);
-		
+
 		$valueAnswer = $this->parent->getAnswer($this->question);
-	
+
 		$readonly = $this->parent->readOnlyForm ? " DISABLED" : "";
 
 		echo "<table class=\"layout\">";
@@ -273,11 +290,11 @@ class MultipleChoiceView extends QuestionField
 				{
 					$tip = " onmouseover=\"showTextToolTip('question_{$this->question->$pk}', event, 'question_help', '".jsSafe($tip)."'); return false;\" onmouseout=\"hideToolTip('question_help');return false\" ";
 				}
-				
+
 				$selected = ($valueAnswer == $idx) ? " checked" : "";
 
 				echo "<tr><td style=\"padding:1px\"$tip><input type='radio'
-				style='border: none' name='question_{$this->question->$pk}' id='question_{$this->question->$pk}_$idx' 
+				style='border: none' name='question_{$this->question->$pk}' id='question_{$this->question->$pk}_$idx'
 				value='$idx'$selected $readonly>&nbsp;$text</td></tr>";
 				$idx++;
 			}
@@ -312,12 +329,12 @@ class MultipleChoiceView extends QuestionField
 		$question_number = $this->question->question_number ? $this->question->question_number : $this->parent->mgr->getQuestionNumber($this->question);
 		return new RequiredRadioButtonQuestionValidator("question_{$this->question->$pk}", "Question {$question_number}", $answer);
 	}
-	
+
 	/**
 	 * Draws an interactive graphical view of answers to one question.
-	 * 
+	 *
 	 * @param obj $mgr - object of the Survey/Questionnaire Results manager class
-	 * 
+	 *
 	 * @param Array $answers - all survey or questionnaire answers to this question
 	 */
 	function drawGraph($mgr, $answers)
@@ -360,14 +377,14 @@ class SelectFieldView extends QuestionField
 			{
 				echo "<option value=''></option>"; // blank
 			}
-			
+
 			foreach($options as $option)
 			{
 				$selected = ($value == $num) ? " selected" : "";
 				echo "<option value='$num'$readonly$selected>$option</option>";
 				$num++;
 			}
-				
+
 			echo "</select>";
 		}
 
@@ -384,18 +401,18 @@ class SelectFieldView extends QuestionField
 	{
 		return $this->getOptionAnswer();
 	}
-	
+
 	/**
 	 * Draws an interactive graphical view of answers to one question.
-	 * 
+	 *
 	 * @param obj $mgr - object of the Survey/Questionnaire Results manager class
-	 * 
+	 *
 	 * @param Array $answers - all survey or questionnaire answers to this question
 	 */
 	function drawGraph($mgr, $answers)
 	{
 		QuestionnaireResultsGraph::drawSelectGraph($this->question, $mgr, $answers);
-	}	
+	}
 }
 
 class RatingView extends QuestionField
@@ -424,13 +441,13 @@ class RatingView extends QuestionField
 			$tip = " onmouseover=\"showTextToolTip('question_{$this->question->$qPk}', event, 'question_help', '".jsSafe($tip)."'); return false;\" onmouseout=\"hideToolTip('question_help');return false\" ";
 		}
 		echo "<div$tip>$from&nbsp;";
-		
+
 		for($i = 1; $i <= $steps; ++$i)
 		{
 			$selected = ($valueAnswer == $i) ? " checked" : "";
 
 			echo "<input type='radio' style='border: none' name='question_{$this->question->$qPk}'
-			id='question_{$this->question->$qPk}_$i' 
+			id='question_{$this->question->$qPk}_$i'
 			value='$i'$selected $readonly />&nbsp;";
 		}
 
@@ -450,7 +467,7 @@ class RatingView extends QuestionField
 
 		return $answer;
 	}
-	
+
 	static function getOptions($options, &$from, &$to, &$steps)
 	{
 		list($from, $to, $steps) = explode("\n", $options);
@@ -458,7 +475,7 @@ class RatingView extends QuestionField
 		if (!$to) $to = "Highest";
 		if (!$steps) $steps = 5;
 	}
-	
+
 	function drawView()
 	{
 		$this->writeHTML();
@@ -473,18 +490,18 @@ class RatingView extends QuestionField
 		$question_number = $this->question->question_number ? $this->question->question_number : $this->parent->mgr->getQuestionNumber($this->question);
 		return new RequiredRadioButtonQuestionValidator("question_{$this->question->$pk}", "Question {$question_number}", $answer);
 	}
-	
+
 	/**
 	 * Draws an interactive graphical view of answers to one question.
-	 * 
+	 *
 	 * @param obj $mgr - object of the Survey/Questionnaire Results manager class
-	 * 
+	 *
 	 * @param Array $answers - all survey or questionnaire answers to this question
 	 */
 	function drawGraph($mgr, $answers)
 	{
 		QuestionnaireResultsGraph::drawRatingsGraph($this->question, $mgr, $answers);
-	}	
+	}
 }
 
 // JDG 8/4/2011 - change to String rendering
@@ -514,8 +531,8 @@ class ShortTextView extends QuestionField
 		if ($tip)
 		{
 			$tip = " onmouseover=\"showTextToolTip('question_{$this->question->$pk}', event, 'question_help', '".jsSafe($tip)."'); return false;\" onmouseout=\"hideToolTip('question_help');return false\" ";
-		}		
-		
+		}
+
 		echo "<input id='$field' type='text' name='$field' $readonly $autocomplete value='".htmlspecialchars($value, ENT_QUOTES, 'UTF-8')."' size='50' $disable $onkeypress $tip/>";
 		echo "<br/><div style='clear: left; float: right'><span id='{$field}_length'>";
 
@@ -538,25 +555,25 @@ class ShortTextView extends QuestionField
 	/**
 	 * There is no graphical display for free text questions so
 	 * just display the answers as a list.
-	 * 
+	 *
 	 * @param obj $mgr - object of the Survey/Questionnaire Results manager class
-	 * 
+	 *
 	 * @param Array $answers - all survey or questionnaire answers to this question
-	 */	
+	 */
 	function drawGraph($mgr, $answers)
 	{
 		$pk = $this->question->getPrimaryKey();
 		echo "<ul>\n";
-		
+
 		foreach($answers as $answer)
 		{
 			if ($answer->value)
 			{
 				echo "<li>" . formatAsHTML(stripHTML($answer->value)) . "</li>\n";
-			}	
+			}
 		}
-		echo "</ul>\n";		
-	}	
+		echo "</ul>\n";
+	}
 }
 
 class FreeTextView extends QuestionField
@@ -590,13 +607,13 @@ class FreeTextView extends QuestionField
 
 		$readonly = $this->parent->readOnlyForm ? " readonly='readonly'": "";
 		$autocomplete = "autocomplete='off'";
-		
+
 		$tip =  $this->question->context_help;
 		if ($tip)
 		{
 			$tip = " onmouseover=\"showTextToolTip('question_{$this->question->$pk}', event, 'question_help', '".jsSafe($tip)."'); return false;\" onmouseout=\"hideToolTip('question_help');return false\" ";
 		}
-		
+
 		echo "<textarea name='{$field}' cols='75' rows='$rows' $onkeypress $readonly $autocomplete $tip>".htmlsafe($value)."</textarea>";
 
 		echo "<br/><div style='clear: left; float: right'><span id='{$field}_length'>";
@@ -610,7 +627,7 @@ class FreeTextView extends QuestionField
 	function drawView()
 	{
 		$value = $this->parent->getAnswer($this->question);
-			
+
 		/* JDG 2/9/10, htmlsafe makes some text with bad characters
 		 * disappear
 		 */
@@ -622,28 +639,28 @@ class FreeTextView extends QuestionField
 		echo "<em>".$answerVal."</em>";
 	}
 
-		
+
 	/**
 	 * There is no graphical display for free text questions so
 	 * just display the answers as a list.
-	 * 
+	 *
 	 * @param obj $mgr - object of the Survey/Questionnaire Results manager class
-	 * 
+	 *
 	 * @param Array $answers - all survey or questionnaire answers to this question
-	 */	
+	 */
 	function drawGraph($mgr, $answers)
 	{
 		$pk = $this->question->getPrimaryKey();
 		echo "<ul>\n";
-		
+
 		foreach($answers as $answer)
 		{
 			if ($answer->value)
 			{
 				echo "<li>" . formatAsHTML(stripHTML($answer->value)) . "</li>\n";
-			}	
+			}
 		}
-		echo "</ul>\n";		
+		echo "</ul>\n";
 	}
 }
 
@@ -701,9 +718,9 @@ class CheckListView extends QuestionField
 				{
 					$tip = " onmouseover=\"showTextToolTip('question_{$this->question->$pk}', event, 'question_help', '".jsSafe($tip)."'); return false;\" onmouseout=\"hideToolTip('question_help');return false\" ";
 				}
-								
+
 				echo "<tr><td style=\"padding:1px\"$tip><input type='checkbox'
-				class='checkbox' name='question_{$this->question->$pk}[$idx]' 
+				class='checkbox' name='question_{$this->question->$pk}[$idx]'
 				value='$value'$readonly$checked/>&nbsp;$text</td></tr>";
 				$idx++;
 			}
@@ -718,7 +735,7 @@ class CheckListView extends QuestionField
 
 	/*
 	 * Indicate count of required checkboxes
-	 * 
+	 *
 	 * If the count of options is 1 and the
 	 * question is required, then just
 	 * show "*" to denote required.
@@ -781,12 +798,12 @@ class CheckListView extends QuestionField
 		}
 		return implode($this->answerSeparator, $answers);
 	}
-	
+
 	/**
 	 * Draws an interactive graphical view of answers to one question.
-	 * 
+	 *
 	 * @param obj $mgr - object of the Survey/Questionnaire Results manager class
-	 * 
+	 *
 	 * @param Array $answers - all survey or questionnaire answers to this question
 	 */
 	function drawGraph($mgr, $answers)

@@ -78,7 +78,7 @@ class QuestionnaireForm
 	var $onSaveComplete = null;	///< Callback event handler that is fired after the AutoForm has finished saving data to the database.
     var $readOnlyForm;  ///< Specifies whether the entire form is read-only
     var $id;
-	
+
 	// AutoForm defaults
 	var $labelCSS = "";					///< CSS Class to use for label cells
 	var $valueCSS = "";					///< CSS Class to use for field/value cells
@@ -92,7 +92,7 @@ class QuestionnaireForm
 	var $subordinate = false;
 	var $buttons = array();				///< The custom buttons collection
 	var $allowIncompleteSave = true;	///< Allows users to save partially completed forms
-	
+
 	function QuestionnaireForm($mgr, $readOnlyForm = false)
 	{
 		global $auto_form_defaults;
@@ -107,7 +107,7 @@ class QuestionnaireForm
 		$this->requiredFieldsText = preg_replace("/field/i", "question", $this->requiredFieldsText);
 
 		$questions = $this->mgr->getQuestions();
-			
+
 		if(count($questions) > 0)
 		{
 			$this->answers = $this->getIndexedAnswers();
@@ -116,19 +116,24 @@ class QuestionnaireForm
 			{
 				$this->questions[] = QuestionField::create($this, $question);
 			}
-				
+
 			$num = 1;
-			
+
 			foreach($this->questions as $question)
 			{
 				if (!$question->skipNumbering)
 				{
 					$question->question->question_number = $num++;
 				}
-				
+
 				if($question->question->required)
 				{
 					array_push($this->validators, $question->getRequiredValidator());
+				}
+
+				if(!empty($question->question->char_min))
+				{
+					array_push($this->validators, $question->getCharMinValidator());
 				}
 			}
 		}
@@ -143,21 +148,21 @@ class QuestionnaireForm
 	{
 		return $this;
 	}
-			
+
 	/**
 	 * Adds a custom button to the form.
 	 *
 	 * @param string $text the button label text
 	 * @param string $url the URL to handle the button press
 	 * @param string $confirm optional confirmation message
-	 * @param boolean $isScript true if the url is javascript code to execute, 
+	 * @param boolean $isScript true if the url is javascript code to execute,
 	 * 							false if it is a URL to redirect to
 	 */
 	function button($text, $url, $confirm = null, $isScript = false)
 	{
 		$this->buttons[] = array('text' => $text, 'url' => $url, 'confirm' => $confirm, 'isScript' => $isScript);
 	}
-	
+
 	/**
 	 * Draws any additional buttons specified in the calling script.
 	 *
@@ -167,7 +172,7 @@ class QuestionnaireForm
 		foreach($this->buttons as $button)
 		{
 			$url = ($button['isScript']) ? $button['url'] : "go('{$button['url']}');";
-			
+
 			if ($button['confirm'])
 			{
 				$link = "if (confirm('".jsSafe($button['confirm'])."')) $url; return false;";
@@ -187,14 +192,14 @@ class QuestionnaireForm
 		$answer = $this->answers[$question->$qPk];
 		return ($answer) ? $answer->value : "";
 	}
-	
+
 	function writeScript()
 	{
 		$script = "";
 
 		if(count($this->questions) == 0)
 			return;
-			
+
 		foreach($this->questions as $question)
 		{
 			$script .= $question->writeScript();
@@ -208,7 +213,7 @@ class QuestionnaireForm
 		{
 			$script .= $validator->writeClient();
 		}
-		
+
 		$script .= "\n\n return true;\n}";
 		$script .= "\n\n";
 		$script .= "function onSubmitQuestionnaire_form(form)\n{\n";
@@ -249,7 +254,7 @@ class QuestionnaireForm
 		echo "<b>{$this->requiredFieldsText}</b><br/><br/>";
 
 		echo "<dl>\n";
-		
+
 		foreach($this->questions as $question)
 		{
 			$this->writeOneQuestion($question);
@@ -265,25 +270,25 @@ class QuestionnaireForm
 		$num = ($question->question->question_number) ? $question->question->question_number : $this->mgr->getQuestionNumber();
 
 		echo " <dt><label for='question_{$qPk}'>";
-		
+
 		if (!$question->skipNumbering)
 		{
 			echo "<b>{$num}.</b> ";
 		}
-		
+
 		echo "{$question->question->question}{$required}</label></dt>\n";
 
 		echo " <dd>";
 
 		$question->writeHTML();
-	
+
 		echo " <br/></dd>";
 	}
 
 	/**
 	 * Put any updated or new answers in the $_POST array into the
 	 * array of answers that are indexed by question id so that when
-	 * we draw the form, the answers are shown, even if page is not 
+	 * we draw the form, the answers are shown, even if page is not
 	 * reloaded. Also called from function save.
 	 */
 	function fromPOST()
@@ -294,16 +299,16 @@ class QuestionnaireForm
 		$qPk = $this->mgr->getQuestionKey();
 		$aPk = $this->mgr->getAnswerKey();
 		$answerClass = $this->mgr->getAnswerClass();
-		
+
 		foreach($_POST as $name => $value)
-		{			
+		{
 			if (!strncmp("question_", $name, 9))
 			{
 				// convert array of checks to comma delimated string
 				$valueAnswer = (is_array($value)) ? implode(",",  array_values($value)) : $value;
-		
+
 				$question_id = substr($name, 9);
-				
+
 				if(array_key_exists($question_id, $this->answers))
 				{
 					$this->answers[$question_id]->value = $valueAnswer;
@@ -319,7 +324,7 @@ class QuestionnaireForm
 				}
 			}
 		}
-	
+
 		// Need to handle deleted checkbox answers which don't appear in $_POST
 		$questions = $this->mgr->getQuestions();
 
@@ -336,7 +341,7 @@ class QuestionnaireForm
 					$checkListQuestions = array($checkListQuestions);
 				}
 			}
-			
+
 			if(count($checkListQuestions) > 0)
 			{
 				foreach($checkListQuestions as $question)
@@ -345,7 +350,7 @@ class QuestionnaireForm
 					if($answer && $answer->value)
 					{
 						$postAnswer = $_POST["question_{$question->$qPk}"];
-						
+
 						if(!$postAnswer && !is_array($postAnswer))
 						{
 							$answer->value = "";
@@ -354,38 +359,38 @@ class QuestionnaireForm
 				}
 			}
 		}
-			
+
 	}
 
 	function drawForm()
 	{
 		if ($this->readOnlyForm) return $this->drawReadOnly();
-		
+
 		echo "<div class='questionnaire_form'>";
 
 		$submitLabel = $this->submitLabel;
-		
+
 		$id = ($this->id) ? $this->id : "Questionnaire_form";
-		
+
 		if (!$this->subordinate)
 		{
 			echo "<form id=\"{$id}\" method=\"POST\" action=\"\" ";
 			echo "enctype='multipart/form-data' onsubmit='return onSubmitQuestionnaire_form(this);'>";
 		}
-		
+
 		if ($this->buttons_at_top && !$this->subordinate)
 		{
 			$this->drawSubmitButtons($submitLabel);
 			$this->drawButtons();
 			echo "<br/><br/>";
 		}
-		
+
 		$this->writeHTML();
 
 		if (!$this->subordinate)
 		{
 			echo "<br/>";
-			$this->drawSubmitButtons($submitLabel);	
+			$this->drawSubmitButtons($submitLabel);
 			$this->drawButtons();
 			echo "<br/>";
 			echo "</form>";
@@ -393,7 +398,7 @@ class QuestionnaireForm
 
 		echo "</div>";
 	}
-	
+
 	function drawSubmitButtons($submitLabel)
 	{
 		echo "<input type=\"submit\" style=\"float: left\" name=\"save\" class=\"{$this->buttonCSS}\" value=\"&nbsp;&nbsp;{$submitLabel}&nbsp;&nbsp;\"/>";
@@ -416,10 +421,10 @@ class QuestionnaireForm
 
 		if(count($answers) > 0)
 			$answers = reindexList($answers, $this->mgr->getQuestionKey());
-			
+
 		return $answers;
 	}
-	
+
 
 	function validate()
 	{
@@ -441,7 +446,7 @@ class QuestionnaireForm
 		$this->fromPOST();
 		$aPk = $this->mgr->getAnswerKey();
 		$qPk = $this->mgr->getQuestionKey();
-		
+
 		foreach($this->answers as $question_id => $answer)
 		{
 			// If saved answer, just update value
@@ -452,7 +457,7 @@ class QuestionnaireForm
 			// new answer - save all fields
 			$answer->save();
 		}
-		
+
 		// Even if invalid, we still want to save their answers
 		$this->msg = $this->validate();
 		if ($this->msg != "")
@@ -512,20 +517,20 @@ class QuestionnairePreview extends QuestionnaireForm
 			$this->questions[] = QuestionField::create($this, $question);
 		}
 	}
-	
+
 	function writeOneQuestion($question)
 	{
 		$required = $question->getRequired();
 		$qPk = $question->getID();
 		$num = ($question->question->question_number) ? $question->question->question_number : $this->mgr->getQuestionNumber();
-		
+
 		echo " <dt><label for='question_{$qPk}'>";
-		
+
 		if (!$question->skipNumbering)
 		{
 			echo "<b>{$num}.</b> ";
 		}
-		
+
 		echo "{$question->question->question}{$required}</label></dt>\n";
 
 		echo " <dd>";
@@ -534,7 +539,7 @@ class QuestionnairePreview extends QuestionnaireForm
 
 		echo " <br/></dd>";
 	}
-	
+
 
 	function writeScript()
 	{
@@ -549,19 +554,19 @@ class QuestionnairePreview extends QuestionnaireForm
  * @param: $mgr - an object of class QuestionnnaireManager, SurveyManager,
  * or other which provides specific data and values to this form as
  * requested.
- * 
+ *
  * This view is similar to calling QuestionnaireForm as readonly
  * except that responses are displayed in summary or text only form,
  * not as disabled fields readonly fields.
- * 
+ *
  * Calling page should call function drawView rather than
  * drawForm for display only view.
- * 
+ *
  * e.g.,
- * 
+ *
  * $mgr = new MyQuestionnaireResponseManger($myObj);
  * $view = new QuestionnaireResponseView($mgr);
- * 
+ *
  * $view->drawView();
  */
 
@@ -576,13 +581,13 @@ class QuestionnaireResponseView extends QuestionnaireForm
 	{
 		$required = $question->getRequired();
 		$num = ($question->question->question_number) ? $question->question->question_number : $this->mgr->getQuestionNumber();
-	
+
 		echo " <dt>\n";
 		if (!$question->skipNumbering)
 		{
 			echo "<b>{$num}.</b> ";
 		}
-		
+
 		echo "{$question->question->question}{$required}</dt>\n";
 		echo " <dd>\n";
 		$question->drawSummaryView();
