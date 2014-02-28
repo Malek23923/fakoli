@@ -72,8 +72,8 @@ class EmailHandler
 		if($emailFrom)
 			$replyTo = $emailFrom;
 
-		if($emailName)
-			$replyToName = $emailName;
+		// if($emailName)
+		// 	$replyToName = $emailName;
 
 		// Use the MD5 algorithm to generate a random hash
 		$random_hash = md5(date('r', time()));
