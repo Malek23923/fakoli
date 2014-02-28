@@ -100,6 +100,7 @@ if ($method == "POST")
 		$headers .= "Reply-To: ". $contactUs->email . "\r\n";
 
 		$message = "Sender: $contactUs->email\r\n\r\n";
+		$message .= "Name: $contactUs->full_name\r\n\r\n";
 		$message .= "Subject: $subject\r\n\r\n";
 		$message .= "Message:\r\n";
 		$message .= $contactUs->message;
