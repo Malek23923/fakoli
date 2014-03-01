@@ -77,11 +77,13 @@ class EmailHandler
 
 		// Use the MD5 algorithm to generate a random hash
 		$random_hash = md5(date('r', time()));
+		$random_id = md5(date('r', time()));
 		$headers = "From: ". $replyToName . " <" . $replyTo . ">\r\n";
 		$headers .= "Return-Path: ". $site_email_from . "\r\n";
 		$headers .= "Reply-To: ". $replyToName . " <" . $replyTo . ">\r\n";
 		$headers .= "Mime-Version: 1.0\r\n";
-
+		$headers .= "Date: " . date("D, d M Y H:i:s O") . "\r\n";
+		$headers .= "Message-ID:  <" . $random_is . "@" . $config["http_host"] . ">";
 		$headers .= "Content-Type: multipart/alternative; boundary=\"--PHP-alt-".$random_hash."\"\r\n";
 
 		$message = $this->getMessageScript($message, $random_hash);

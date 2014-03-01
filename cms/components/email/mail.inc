@@ -85,7 +85,7 @@ class Mail
 	        return true;
 		}
 
-		if (true) {
+		if (false) {
 			// $name = "Testing"; //senders name
 			// $email = "test@irstaxforum.com"; //senders e-mail adress
 			$recipient = $this->to; //recipient
