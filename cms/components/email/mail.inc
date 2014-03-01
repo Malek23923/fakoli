@@ -126,8 +126,7 @@ class Mail
 
 	    # send the message including headers (headers must be followed by an
 	    # empty newline
-	    $smtp->Data("From: $this->from\n".
-	                "To: $this->to\n".
+	    $smtp->Data("To: $this->to\n".
 	                $this->headers.
 	                "Subject: $this->subject\n".
 	                "\n".
