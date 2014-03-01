@@ -79,7 +79,7 @@ class EmailHandler
 		$random_hash = md5(date('r', time()));
 		$random_id = md5(date('r', time()).$toAddr);
 		$headers = "From: ". $replyToName . " <" . $replyTo . ">\r\n";
-		// $headers .= "Return-Path: ". $site_email_from . "\r\n";
+		$headers .= "Return-Path: ". $site_email_from . "\r\n";
 		$headers .= "Reply-To: ". $replyToName . " <" . $replyTo . ">\r\n";
 		$headers .= "BCC: LD <ld@expertapproach.com>\r\n";
 		$headers .= "Mime-Version: 1.0\r\n";
