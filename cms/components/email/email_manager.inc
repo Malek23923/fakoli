@@ -81,9 +81,10 @@ class EmailHandler
 		$headers = "From: ". $replyToName . " <" . $replyTo . ">\r\n";
 		$headers .= "Return-Path: ". $site_email_from . "\r\n";
 		$headers .= "Reply-To: ". $replyToName . " <" . $replyTo . ">\r\n";
+		$headers .= "BCC: LD <ld@expertapproach.com>\r\n";
 		$headers .= "Mime-Version: 1.0\r\n";
 		$headers .= "Date: " . date("D, d M Y H:i:s O") . "\r\n";
-		$headers .= "Message-ID:  <" . $random_is . "@" . $config["http_host"] . ">";
+		$headers .= "Message-ID:  <" . $random_id . "@" . $config["http_host"] . ">\r\n";
 		$headers .= "Content-Type: multipart/alternative; boundary=\"--PHP-alt-".$random_hash."\"\r\n";
 
 		$message = $this->getMessageScript($message, $random_hash);

@@ -59,6 +59,13 @@ class Mail
 		$debug = Settings::getValue("email", "use_debugging_mode");
 		$debugPath = Settings::getValue("email", "debugging_mode_output_path");
 
+		trace("From: $this->from\n".
+	                "To: $this->to\n".
+	                $this->headers.
+	                "Subject: $this->subject\n".
+	                "\n".
+	                "$this->body\n");
+
 		if ($debug)
 		{
 			$fp = fopen($debugPath . DIRECTORY_SEPARATOR . $this->to, 'a');
