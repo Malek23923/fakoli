@@ -77,7 +77,7 @@ class EmailHandler
 
 		// Use the MD5 algorithm to generate a random hash
 		$random_hash = md5(date('r', time()));
-		$random_id = md5(date('r', time()));
+		$random_id = md5(date('r', time()).$toAddr);
 		$headers = "From: ". $replyToName . " <" . $replyTo . ">\r\n";
 		$headers .= "Return-Path: ". $site_email_from . "\r\n";
 		$headers .= "Reply-To: ". $replyToName . " <" . $replyTo . ">\r\n";
