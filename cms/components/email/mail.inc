@@ -59,13 +59,6 @@ class Mail
 		$debug = Settings::getValue("email", "use_debugging_mode");
 		$debugPath = Settings::getValue("email", "debugging_mode_output_path");
 
-		trace("From: $this->from\n".
-	                "To: $this->to\n".
-	                $this->headers.
-	                "Subject: $this->subject\n".
-	                "\n".
-	                "$this->body\n");
-
 		if ($debug)
 		{
 			$fp = fopen($debugPath . DIRECTORY_SEPARATOR . $this->to, 'a');
@@ -90,19 +83,6 @@ class Mail
 
 	        fclose($fp);
 	        return true;
-		}
-
-		if (false) {
-			// $name = "Testing"; //senders name
-			// $email = "test@irstaxforum.com"; //senders e-mail adress
-			$recipient = $this->to; //recipient
-			$mail_body = $this->body; //mail body
-			$subject = $this->subject; //subject
-			// $header = "From: ". $name . " <" . $email . ">\r\n"; //optional headerfields
-			$header = $this->headers; //optional headerfields
-
-			mail($recipient, $subject, $mail_body, $header); //mail command :)
-			return true;
 		}
 
 	    $smtp = new SMTP;
