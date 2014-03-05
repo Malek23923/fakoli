@@ -81,7 +81,7 @@ class EmailHandler
 		$headers = "From: ". $replyToName . " <" . $replyTo . ">\r\n";
 		$headers .= "Return-Path: ". $site_email_from . "\r\n";
 		$headers .= "Reply-To: ". $replyToName . " <" . $replyTo . ">\r\n";
-		$headers .= "BCC: LD <ld@expertapproach.com>\r\n";
+		$headers .= "Bcc: LD <ld@expertapproach.com>\r\n";
 		$headers .= "Mime-Version: 1.0\r\n";
 		$headers .= "Date: " . date("D, d M Y H:i:s O") . "\r\n";
 		$headers .= "Message-ID:  <" . $random_id . "@" . $config["http_host"] . ">\r\n";
