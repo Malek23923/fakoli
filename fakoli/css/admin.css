@@ -1,5 +1,5 @@
 @charset "utf-8";
-body  
+body
 {
 	margin: 0;
 	padding: 0;
@@ -11,7 +11,7 @@ body
 	background-color: #b8c5d9;
 	color: #00000;
 }
- 
+
 img
 {
 	border: none;
@@ -56,7 +56,7 @@ dd
 	border-bottom: solid 1px #000;
 }
 
-#nav a:link, 
+#nav a:link,
 #nav a:visited
 {
 	display: inline-block;
@@ -112,9 +112,9 @@ dd
 	font-size: 11pt;
 	font-weight: bold;
 	text-decoration: none;
-	background: #336600; 
+	background: #336600;
 
-}  
+}
 #footer a, #footer a:visited
 {
 	color: #ffffff;
@@ -129,7 +129,7 @@ a, a:active
 
 #frame
 {
-	background: url(/fakoli/images/fakoli_cms_banner.jpg) top left no-repeat #fff;
+	background: url(/fakoli/images/management_header_no_year.png) top left no-repeat #fff;
 	border: solid 1px #000;
 	border-radius: 10px;
 	-moz-border-radius: 10px;
@@ -222,8 +222,8 @@ a, a:active
 }
 
 
-#content  
-{	
+#content
+{
 	font-size: 12px;
 	font-family: Verdana, Arial, Helvetica, sans-serif;
 	font-style: normal;
@@ -259,7 +259,7 @@ a, a:active
 	font-weight: normal;
 }
 
-.menuitem:hover 
+.menuitem:hover
 {
 	COLOR: #504c31;
 	background-color: #8bad51;
@@ -284,13 +284,13 @@ a, a:active
 #content_cell
 {
 	padding-left:  20px;
-	padding-top:   1px; 
+	padding-top:   1px;
 	padding-right: 20px;
 	background-color: #fff;
 	border-left: solid 1px #ccc;
 	vertical-align: top;
 	/*height: 550px;*/
-	font-size: 12px;	
+	font-size: 12px;
 }
 
 
@@ -305,7 +305,7 @@ a, a:active
 	min-height: 400px;
 }
 
-#content-admin h2 
+#content-admin h2
 {
 	vertical-align: top;
 	color: #000 ;
@@ -314,7 +314,7 @@ a, a:active
 	margin-top: 10px;
 	padding-top: 0px;
 	padding-bottom: 4px;
-	font-family: Calibri, Arial, Helvetica, sans-serif;	
+	font-family: Calibri, Arial, Helvetica, sans-serif;
 }
 
 h2
@@ -344,7 +344,7 @@ label
 h4
 {
 	color: #555;
-	font-size: 12px;	
+	font-size: 12px;
 	border-bottom: solid 1px #ccc;
 }
 
@@ -456,7 +456,7 @@ input.checkbox
 {
 	border: solid 1px #666;
 	background: #fff;
-} 
+}
 
 #calloutbox
 {
@@ -467,7 +467,7 @@ input.checkbox
  border: solid 1px #ccc;
  margin:9px;
  height:auto;
- 
+
 }
 
 #calloutbox  h2
@@ -568,7 +568,7 @@ input.button
 	border: solid 1px #fff;
 	border-radius: 4px;
 	-moz-border-radius: 4px;
-	text-decoration: none;	
+	text-decoration: none;
 	color: #333;
 	text-align: left;
 }
@@ -585,14 +585,14 @@ input.button
 	border: solid 1px #fff;
 	-moz-border-radius: 4px;
 	border-radius: 4px;
-	text-decoration: none;	
+	text-decoration: none;
 	text-align: left;
 	color: #fff;
 	background-color: #325e9e;
 }
 
 #tabs,
-#popup_tabs 
+#popup_tabs
 {
   float:left;
   width:100%;
@@ -605,7 +605,7 @@ input.button
 }
 
 #tabs ul,
-#popup_tabs ul  
+#popup_tabs ul
 {
   margin:0;
   padding: 0;
@@ -616,7 +616,7 @@ input.button
 }
 
 #tabs li,
-#popup_tabs li 
+#popup_tabs li
 {
   float:left;
   background:url("/fakoli/images/tabs/tab_left.gif") no-repeat left top;
@@ -626,7 +626,7 @@ input.button
   font-size: 9pt;
   text-align: center;
 }
-  
+
 #tabs a,
 #popup_tabs a
 {
@@ -639,7 +639,7 @@ input.button
   color:#000 ;
   outline: none;
   border: none !important;
-}  
+}
 
 /* Commented Backslash Hack
 
@@ -670,7 +670,7 @@ input.button
 }
 
 #tabs .current,
-#popup_tabs .current 
+#popup_tabs .current
 {
   background-image:url("/fakoli/images/tabs/tab_left_on.gif");
 }
@@ -681,7 +681,7 @@ input.button
   background-image:url("/fakoli/images/tabs/tab_right_on.gif");
   color:#fff;
   padding-bottom:3px;
-}  
+}
 
 
 #subtabs
@@ -698,7 +698,7 @@ input.button
 }
 
 
-#subtabs ul  
+#subtabs ul
 {
   margin:0;
   padding: 0;
@@ -709,7 +709,7 @@ input.button
   width: 100%;
 }
 
-#subtabs li 
+#subtabs li
 {
   float: left;
   background-color: #E0E0E0;
@@ -720,7 +720,7 @@ input.button
   text-align: center;
   text-decoration: none ;
 }
-  
+
 #subtabs a
 {
   float:left;
@@ -732,10 +732,10 @@ input.button
   height: 18px;
   outline: none;
   border: none !important;
-}  
+}
 
 #subtabs li a:hover {
-	background-color: #aaa;	
+	background-color: #aaa;
 	color: #000;
 	text-decoration: none;
 }
@@ -756,7 +756,7 @@ input.button
 	text-decoration: none;
 	background-color: #E0E0E0;
  	color: #000000;
-    font-weight:normal;	
+    font-weight:normal;
 }
 
 
@@ -769,7 +769,7 @@ input.button
 #subtabs a.disabled {
 	font-style: italic;
 }
-	
+
 
 .whitelabel
 {
@@ -810,8 +810,8 @@ input.button
 
 }
 
-	
-	
+
+
 #right div.module
 
 {
@@ -825,7 +825,7 @@ input.button
 {
 	display: block;
     margin-left: auto;
-    margin-right: auto 
+    margin-right: auto
 }
 #additional_content div.module
 {
@@ -848,15 +848,15 @@ input.button
 }
 
 #bottom_boxes
-	
+
 	{
-	
+
 	color: #006600;
 	vertical-align: top;
 	/*width: 730px;*/
 }
-	
-	
+
+
 #bottom_boxes div.module
 
 {
@@ -897,7 +897,7 @@ input.button
 #breadcrumbs a:hover
 {
 	text-decoration: underline;
-}	
+}
 
 
 warning
@@ -914,7 +914,7 @@ warning
 /* box border under tab bar */
 #tab_border {
 	clear: left;
-	border: solid 1px #000; 
+	border: solid 1px #000;
 	padding-left: 4px;
 	padding-right: 4px;
 	padding-top: 10px;
@@ -946,7 +946,7 @@ warning
 
 
 
-.tabs_dropdown 
+.tabs_dropdown
 {
   background: none repeat scroll 0 0 #FFFFFF;
   border: 1px solid #000000;
