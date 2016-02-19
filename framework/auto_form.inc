@@ -1207,17 +1207,49 @@ document.id('<?echo $this->id?>').iFrameFormRequest({'onRequest': function() { r
 		return true;
 	}
 
-	function SaveChangedFields($pk, $filter, $obj, $user_id)
+	function SaveChangedFields($pk, $filter, $obj)
 	{
+		$item_type = $obj->table;
+		//if not in list, return true
+		$trackedtables = array("check_payment","exhibitor_form_status","expo_pass_purchase","irs_booth","irs_booth_staff"
+			,"irs_conference_participant_xref_t","irs_conference_transfer_request","irs_exhibit","irs_exhibitor"
+			,"irs_exhibitor_contact","irs_participant","job_role","site_user","transaction","workshop_participant_xref");
+		if (in_array($item_type, $trackedtables))
+		{
+			//continue function;
+		}
+		else
+		{
+			return true;
+		}
+	    $user_id = $_SESSION["user"]->user_id;
+		$item_id = $obj->$pk;
+		$additional_fields = "";
+		$additional_values = "";
+if (array_key_exists('participant_id', $obj->fields))
+  {
+		$additional_fields .= ", participant_id";
+		$additional_values .= ",'".$obj->participant_id."'";
+  }
+if (array_key_exists('exhibitor_id', $obj->fields))
+  {
+		$additional_fields .= ", exhibitor_id";
+		$additional_values .= ",'".$obj->exhibitor_id."'";
+  }
 
-	    $user_id = checkNumeric($_GET['user_id']);
-		$pkfieldname = $obj->primary_key;
-		$whereString = "WHERE ".$obj->primary_key." = '".$obj->$pkfieldname."' ";
-		$old_record = query($obj->table, $whereString);
-		echo $pkfieldname.': '.$obj->$pkfieldname.'<br/>';
-		echo 'Where String:'.$whereString.'<br/>';
-		echo '<br/>';
-		echo 'User ID: '.$user_id.'<br/>';
+		$ObjectModel = $item_type;
+			 // var_dump($ObjectModel);
+
+		if ($ObjectModel == 'site_user') {$ObjectModel = 'SiteUser';}
+
+		$whereString = "WHERE ".$pk." = '".$item_id."'";
+			 // var_dump($ObjectModel);
+			 // var_dump($whereString);
+			 // die();
+
+		$old_record = query($ObjectModel, $whereString);
+
+
 
 		foreach (array_keys($this->fields) as $field)
 		{
@@ -1227,28 +1259,22 @@ document.id('<?echo $this->id?>').iFrameFormRequest({'onRequest': function() { r
 			{
 				if ($obj->$field != $old_record[0]->$field)
 				{
-					echo 'New Record '.$field.'<br/>';
-					var_dump($obj->$field);
-					echo 'Old Record '.$field.'<br/>';
-					var_dump($old_record[0]->$field);
-					echo '<br/>';
+					$new_value = $obj->$field;
+					$old_value = $old_record[0]->$field;
 
-// start add action log
+					if (is_string($new_value)) {$new_value = htmlsafe($new_value);}
 
-					echo 'insert into action_log (user_id) values ('.$user_id.');';
-					$sql = array(
-							'insert into action_log (user_id)
-							 values ('.$user_id.')
-							;');
+					$sql = "insert into action_log (user_id, new_value, old_value, keyname, item_type, item_id".$additional_fields.") 
+						values ('".$user_id."','".$new_value."','".$old_value."','".$field."','".$item_type."','".$item_id."'".$additional_values.");";
 
-					$update_count = 0;
-					foreach ($sql as $key => $query) {
-						if (empty($query))
+					//echo $sql.'<br/>';
+
+						if (empty($sql))
 							continue;
 						try
 						{
 							$db = ConnectionManager::getConnection();
-							$result = $db->prepare($query);
+							$result = $db->prepare($sql);
 							$result->execute();
 						}
 						catch(PDOException $e)
@@ -1257,17 +1283,13 @@ document.id('<?echo $this->id?>').iFrameFormRequest({'onRequest': function() { r
 							trace($err, 2);
 							throw new DataItemException($err);
 						}
-					}
-
-// end add action log
-
-
 
 				}
 
 			}
 		}
-die();
+
+		//die();
 
 	}
 
