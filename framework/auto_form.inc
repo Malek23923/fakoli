@@ -1182,6 +1182,9 @@ document.id('<?echo $this->id?>').iFrameFormRequest({'onRequest': function() { r
 		$this->msg = $this->validator->validate();
 		if ($this->msg != "") return false;
 
+		// record changes to fields
+		$this->SaveChangedFields($pk, $filter, $obj);
+
 		if ($this->customSaveHandler)
 		{
 			if (!call_user_func_array($this->customSaveHandler, array($this))) return false;
@@ -1203,6 +1206,73 @@ document.id('<?echo $this->id?>').iFrameFormRequest({'onRequest': function() { r
 
 		return true;
 	}
+
+	function SaveChangedFields($pk, $filter, $obj, $user_id)
+	{
+
+	    $user_id = checkNumeric($_GET['user_id']);
+		$pkfieldname = $obj->primary_key;
+		$whereString = "WHERE ".$obj->primary_key." = '".$obj->$pkfieldname."' ";
+		$old_record = query($obj->table, $whereString);
+		echo $pkfieldname.': '.$obj->$pkfieldname.'<br/>';
+		echo 'Where String:'.$whereString.'<br/>';
+		echo '<br/>';
+		echo 'User ID: '.$user_id.'<br/>';
+
+		foreach (array_keys($this->fields) as $field)
+		{
+			if ($field != $pk  && 
+			!array_key_exists($field, $this->hidden) &&
+			!($filter && $filter->isExcluded($field)))
+			{
+				if ($obj->$field != $old_record[0]->$field)
+				{
+					echo 'New Record '.$field.'<br/>';
+					var_dump($obj->$field);
+					echo 'Old Record '.$field.'<br/>';
+					var_dump($old_record[0]->$field);
+					echo '<br/>';
+
+// start add action log
+
+					echo 'insert into action_log (user_id) values ('.$user_id.');';
+					$sql = array(
+							'insert into action_log (user_id)
+							 values ('.$user_id.')
+							;');
+
+					$update_count = 0;
+					foreach ($sql as $key => $query) {
+						if (empty($query))
+							continue;
+						try
+						{
+							$db = ConnectionManager::getConnection();
+							$result = $db->prepare($query);
+							$result->execute();
+						}
+						catch(PDOException $e)
+						{
+							$err = "query() failed - " . $e->getMessage();
+							trace($err, 2);
+							throw new DataItemException($err);
+						}
+					}
+
+// end add action log
+
+
+
+				}
+
+			}
+		}
+die();
+
+	}
+
+
+
 
 	function preProcessFields($pk, $filter)
 	{
