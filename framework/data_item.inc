@@ -571,6 +571,66 @@ class DataItem extends AbstractDataItem
     		
 		$first = true;
 		$found = false;
+
+///set it up here
+		$sql = array();
+
+		// var_dump($this);
+		// die();
+
+
+
+		$item_type = $this->table;
+		//if not in list, return true
+		$trackedtables = array("irs_booth_staff",
+			"irs_conference_participant_xref",
+			"irs_conference_transfer_request",
+			"irs_exhibit",
+			"irs_exhibitor",
+			"irs_exhibitor_contact",
+			"irs_participant",
+			"job_role",
+			"site_user",
+			"transaction",
+			"workshop_participant_xref");
+		if (in_array($item_type, $trackedtables))
+		{
+			//continue function;
+		}
+		else
+		{
+			return true;
+		}
+	    $user_id = $_SESSION["user"]->user_id;
+		$pk = $this->primary_key;
+		$item_id = $this->$pk;
+		$additional_fields = "";
+		$additional_values = "";
+if (array_key_exists('participant_id', $this->fields))
+  {
+		$additional_fields .= ", participant_id";
+		$additional_values .= ",'".$this->participant_id."'";
+  }
+if (array_key_exists('exhibitor_id', $this->fields))
+  {
+		$additional_fields .= ", exhibitor_id";
+		$additional_values .= ",'".$this->exhibitor_id."'";
+  }
+
+		$ObjectModel = $item_type;
+			 // var_dump($ObjectModel);
+
+		if ($ObjectModel == 'site_user') {$ObjectModel = 'SiteUser';}
+
+		$whereString = "WHERE ".$pk." = '".$item_id."'";
+			 // var_dump($ObjectModel);
+			 // var_dump($whereString);
+			 // die();
+
+		$old_record = query($ObjectModel, $whereString);
+
+		//var_dump($old_record);
+		//die();
 		
 		foreach($this->fields as $field => $type)
 		{			
@@ -582,9 +642,20 @@ class DataItem extends AbstractDataItem
 			
 			$first = false;
 			$found = true;
-			
 			$query .= "$field=";
 			$query .= $this->quoteFieldValue($field, $type);
+
+				if ($this->$field != $old_record[0]->$field)
+				{
+					$new_value = $this->$field;
+					$old_value = $old_record[0]->$field;
+					if (is_string($new_value)) {$new_value = htmlsafe($new_value);}
+					if ($user_id > 100) 
+					{
+					$sql[] = "insert into action_log (user_id, new_value, old_value, keyname, item_type, item_id".$additional_fields.") 
+						values ('".$user_id."','".$new_value."','".$old_value."','".$field."','".$item_type."','".$item_id."'".$additional_values.");";
+						}
+				}
     	}
 
     	if (!$found) return true; // No fields to update - bug out quietly
@@ -610,6 +681,29 @@ class DataItem extends AbstractDataItem
 			throw new DataItemException($err);		
 		}
 		
+		// here is where we run each sql query to update the action log.
+		// var_dump($sql);
+		// die();
+		
+		foreach ($sql as $key => $query) {
+			if (empty($query))
+				continue;
+			try
+			{
+				$db = ConnectionManager::getConnection();
+				$result = $db->prepare($query);
+				$result->execute();
+			}
+			catch(PDOException $e)
+			{
+				$err = "query() failed - " . $e->getMessage();
+				trace($err, 2);
+				throw new DataItemException($err);
+			}
+		}
+
+
+
 		return $success;
 	}
 	
