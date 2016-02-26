@@ -595,42 +595,45 @@ class DataItem extends AbstractDataItem
 			"workshop_participant_xref");
 		if (in_array($item_type, $trackedtables))
 		{
+
+		    $user_id = $_SESSION["user"]->user_id;
+			$pk = $this->primary_key;
+			$item_id = $this->$pk;
+			$additional_fields = "";
+			$additional_values = "";
+			if (array_key_exists('participant_id', $this->fields))
+			  {
+				$additional_fields .= ", participant_id";
+				$additional_values .= ",'".$this->participant_id."'";
+			  }
+			if (array_key_exists('exhibitor_id', $this->fields))
+			  {
+				$additional_fields .= ", exhibitor_id";
+				$additional_values .= ",'".$this->exhibitor_id."'";
+			  }
+
+			$ObjectModel = $item_type;
+				 // var_dump($ObjectModel);
+
+			if ($ObjectModel == 'site_user') {$ObjectModel = 'SiteUser';}
+
+			$whereString = "WHERE ".$pk." = '".$item_id."'";
+				 // var_dump($ObjectModel);
+				 // var_dump($whereString);
+				 // die();
+
+			$old_record = query($ObjectModel, $whereString);
+
+			//var_dump($old_record);
+			//die();
+
 			//continue function;
 		}
 		else
 		{
-			return true;
+			//continue function;
+//			return true;
 		}
-	    $user_id = $_SESSION["user"]->user_id;
-		$pk = $this->primary_key;
-		$item_id = $this->$pk;
-		$additional_fields = "";
-		$additional_values = "";
-if (array_key_exists('participant_id', $this->fields))
-  {
-		$additional_fields .= ", participant_id";
-		$additional_values .= ",'".$this->participant_id."'";
-  }
-if (array_key_exists('exhibitor_id', $this->fields))
-  {
-		$additional_fields .= ", exhibitor_id";
-		$additional_values .= ",'".$this->exhibitor_id."'";
-  }
-
-		$ObjectModel = $item_type;
-			 // var_dump($ObjectModel);
-
-		if ($ObjectModel == 'site_user') {$ObjectModel = 'SiteUser';}
-
-		$whereString = "WHERE ".$pk." = '".$item_id."'";
-			 // var_dump($ObjectModel);
-			 // var_dump($whereString);
-			 // die();
-
-		$old_record = query($ObjectModel, $whereString);
-
-		//var_dump($old_record);
-		//die();
 		
 		foreach($this->fields as $field => $type)
 		{			
