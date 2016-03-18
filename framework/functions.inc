@@ -60,9 +60,8 @@ function checkRole($role, $account = null)
 
 	// }
 
-	if ($account->role == "name_changer") return true;
+	if ($role == "" || $account->role == "super" || $account->role == "name_changer" || $account->role == "admin") return true;
 
-	if ($account->role != "name_changer" && ($role == "" || $account->role == "super" || $account->role == "admin")) return true;
 	if (!$account) return false;
 	
 	if ($role != "" && $account->role == "") return false;
@@ -70,6 +69,9 @@ function checkRole($role, $account = null)
 	$userRoles = explode(",", $account->role);
 	foreach($userRoles as $ur)
 	{
+
+		if ($ur == "super" || $ur == "name_changer" || $ur == "admin") $allowed = true;		
+		if ($allowed) break;
 		$expr = "/\\b{$ur}\\b/";
 		$allowed = (preg_match($expr, $role) > 0) ? true : false;
 		if ($allowed) break;
