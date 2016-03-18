@@ -70,7 +70,7 @@ function checkRole($role, $account = null)
 	foreach($userRoles as $ur)
 	{
 
-		if ($ur == "super" || $ur == "name_changer" || $ur == "admin") $allowed = true;		
+		if ($ur == "name_changer") $allowed = true;		
 		if ($allowed) break;
 		$expr = "/\\b{$ur}\\b/";
 		$allowed = (preg_match($expr, $role) > 0) ? true : false;
