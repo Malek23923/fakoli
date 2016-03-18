@@ -589,7 +589,6 @@ class DataItem extends AbstractDataItem
 			"irs_exhibitor",
 			"irs_exhibitor_contact",
 			"irs_participant",
-			"job_role",
 			"site_user",
 			"transaction");
 		if (in_array($item_type, $trackedtables))
