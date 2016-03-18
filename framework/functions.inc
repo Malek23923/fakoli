@@ -53,7 +53,7 @@ function checkRole($role, $account = null)
 	
 	if (!$account) $account = $user;
 	
-	if ($role == "" || $account->role == "super" || $account->role == "admin") return true;
+	if ($role != "name_changer" && ($role == "" || $account->role == "super" || $account->role == "admin")) return true;
 
 	if (!$account) return false;
 	
