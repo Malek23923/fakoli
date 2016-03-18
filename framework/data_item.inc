@@ -104,7 +104,7 @@ class DataItem extends AbstractDataItem
 					{
 						$this->populate($arg[0]);
 					}
-					else
+					else if (!is_null($arg[0]))
 					{
 						$this->load($arg[0]);
 					}
