@@ -584,7 +584,6 @@ class DataItem extends AbstractDataItem
 		//if not in list, return true
 		$trackedtables = array("irs_booth_staff",
 			"irs_conference_participant_xref",
-			"irs_conference_transfer_request",
 			"irs_exhibit",
 			"irs_exhibitor",
 			"irs_exhibitor_contact",
@@ -659,7 +658,12 @@ class DataItem extends AbstractDataItem
 				}
     	}
 
-    	if (!$found) return true; // No fields to update - bug out quietly
+    	if (!$found)
+    	{
+    		$err = "DataItem::update() failed - not found";
+			trace($err, 2);
+			return true; // No fields to update - bug out quietly
+    	} 
     	
 		$query .= " WHERE $pk={$this->$pk} ".$this->getIdentityConstraint();
 		
